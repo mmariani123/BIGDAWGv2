@@ -405,10 +405,10 @@ ui <- dashboardPage(
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
 
-    observeEvent(input$Run.Bigdawg, {
-      session$sendCustomMessage(type = 'testmessage',
-                                message = 'Thank you for trying BIGDAWG')
-    })
+    #observeEvent(input$Run.Bigdawg, {
+    #  session$sendCustomMessage(type = 'testmessage',
+    #                            message = 'Thank you for trying BIGDAWG')
+    #})
 
     bigdawg.output <- eventReactive(input$Run.Bigdawg, {
       #if(input$HLA           &
