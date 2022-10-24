@@ -706,7 +706,7 @@ if(Output){
           #cat(paste(rep("_",50),collapse=""))
 
           if(UPL.flag){
-            cat(pste0("Using updated protein exon alignments ",
+            cat(paste0("Using updated protein exon alignments ",
             "for amino acid analysis.\n"))
           }
 
