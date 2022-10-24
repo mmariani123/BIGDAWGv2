@@ -12,14 +12,14 @@ library(shinydashboard)
 library(shinyWidgets)
 library(shinyFiles)
 library(stringr)
-library(devtools)
+#library(devtools)
 library(shinyBS) #Tooltip doesn't seem to work with bsButton or action button
 library(BIGDAWGv2)
 #library(shiny.fluent)
 #devtools::load_all()
 
 ui <- dashboardPage(
-  dashboardHeader(title = "BIGDAWG v2"),
+  dashboardHeader(title = "BIGDAWGv2"),
   dashboardSidebar(
     #tags$style('
     #    body{
@@ -429,7 +429,7 @@ server <- function(input, output, session) {
       #   input$Verbose){
       print(input$Data$datapath)
       print(input$Loci.Set)
-      bigdawg.results <- BIGDAWG::BIGDAWG_human(
+      bigdawg.results <- BIGDAWGv2::BIGDAWG_human(
         Data         = input$Data$datapath,
         HLA          = input$HLA,
         Run.Tests    = input$Run.Tests,
