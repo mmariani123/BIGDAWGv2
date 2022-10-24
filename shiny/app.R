@@ -11,7 +11,6 @@ library(shiny)
 library(shinydashboard)
 library(shinyWidgets)
 library(shinyFiles)
-library(BIGDAWG)
 library(stringr)
 library(devtools)
 library(shinyBS) #Tooltip doesn't seem to work with bsButton or action button
