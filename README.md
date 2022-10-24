@@ -8,3 +8,6 @@ Data sets and functions for chi-squared Hardy-Weinberg and case-control
     Mack SJ, Thomson G, Gourraud PA (2012) <doi:10.1007/978-1-61779-842-9_14>.
     
 For more details, please visit http://tools.immunogenomics.org.
+
+BIGDAWG version2 in progress with additions by Michael Mariani PhD
+and Richard Single PhD.
