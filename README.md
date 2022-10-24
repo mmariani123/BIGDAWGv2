@@ -1,4 +1,4 @@
-# BIGDAWG
+# BIGDAWGv2
 Data sets and functions for chi-squared Hardy-Weinberg and case-control
     association tests of highly polymorphic genetic data [e.g., human leukocyte antigen
     (HLA) data]. Performs association tests at multiple levels of polymorphism
