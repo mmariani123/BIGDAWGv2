@@ -14,6 +14,7 @@ library(shinyFiles)
 library(stringr)
 #library(devtools)
 library(shinyBS) #Tooltip doesn't seem to work with bsButton or action button
+library(BIGDAWG)
 library(BIGDAWGv2)
 #library(shiny.fluent)
 #devtools::load_all()
@@ -384,13 +385,20 @@ ui <- dashboardPage(
     # Boxes need to be put in a row (or column)
     fluidRow(
       div(
-        HTML(paste0("Welcome to BIGDAWG v2. Upload your input LA data file, fill ",
+        HTML(paste0("Welcome to BIGDAWGv2. Upload your input LA data file, fill ",
         "out the parameters on the left, and hit the 'Run BIGDAWG' button. ",
-        "results will be available via download using hte download button and ",
+        "results will be available via download using the download button and ",
         "output to the screen as well. The test data can also be downloaded ",
         "(tab-delimited .txt format) by clicking the 'download test data' ",
         "button in the parameters sections. For further information, ",
-        "consult the documentation. We hope that you enjoy using BIGDDAWG.")),
+        "consult the documentation. We hope that you enjoy using BIGDDAWG."),
+        "<br><br> <b>Citation</b> <br> Data sets and functions for chi-squared Hardy-Weinberg and case-control
+        association tests of highly polymorphic genetic data [e.g., human leukocyte antigen
+        (HLA) data]. Performs association tests at multiple levels of polymorphism
+        (haplotype, locus and HLA amino-acids) as described in Pappas DJ, Marin W, Hollenbach
+        JA, Mack SJ (2016) <doi:10.1016/j.humimm.2015.12.006>. Combines rare variants to a
+        common class to account for sparse cells in tables as described by Hollenbach JA,
+        Mack SJ, Thomson G, Gourraud PA (2012) <doi:10.1007/978-1-61779-842-9_14>."),
         style="text-align:justify; color:black; margin:20px;"
       ),
       div(
