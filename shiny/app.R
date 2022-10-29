@@ -19,6 +19,11 @@ library(BIGDAWGv2)
 #library(shiny.fluent)
 #devtools::load_all()
 
+#human
+#bola (bovine)
+#chicken
+#dog
+
 ui <- dashboardPage(
   dashboardHeader(title = "BIGDAWGv2"),
   dashboardSidebar(
@@ -437,7 +442,7 @@ server <- function(input, output, session) {
       #   input$Verbose){
       print(input$Data$datapath)
       print(input$Loci.Set)
-      bigdawg.results <- BIGDAWGv2::BIGDAWG_human(
+      bigdawg.results <- BIGDAWGv2::BIGDAWGv2(
         Data         = input$Data$datapath,
         HLA          = input$HLA,
         Run.Tests    = input$Run.Tests,
