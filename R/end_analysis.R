@@ -3,11 +3,13 @@
 #' end_analysis function
 #' @param Output Logical Should analysis results be written to output directory.
 #' @param OutDir OutDir parameter
-#' @param BD.out  BD.out parameter
+#' @param BD.out BD.out parameter
+#' @param Return Return parameter
 
 end_analysis <- function(Output,
                          OutDir,
-                         BD.out){
+                         BD.out,
+                         Return){
 
   # ======================================================================== ####
   cat("\n>>>>>>>>>>>>>>>>>>>>>>>>>> End Analysis <<<<<<<<<<<<<<<<<<<<<<<<<<\n")

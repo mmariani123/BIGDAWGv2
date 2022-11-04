@@ -2,19 +2,21 @@
 #'
 #' Function to run the Hardy-Weinberg analysis
 #' @param HLA HLA parameter
-#' @param TRIM TRIM parameter
-#' @param TAB TAB parameter
+#' @param Trim Trim parameter
+#' @param Tab Tab parameter
 #' @param Output Output parameter
 #' @param Verbose Verbose parameter
+#' @param BD.out BD.out parameter
 
 # ===================================================================================================================================== ####
 # Hardy Weignberg Equilibrium 'HWE' ___________________________________________________________________________________________________ ####
 
-run_hwe <- function(HLA,
-                    TRIM,
-                    TAB,
-                    Output,
-                    Verbose){
+run_hwe_analysis <- function(HLA,
+                             Trim,
+                             Tab,
+                             Output,
+                             Verbose,
+                             BD.out){
 
   cat("\n>>>> STARTING HARDY-WEINBERG ANALYSIS...\n")
   #cat(paste(rep("_",50),collapse=""),"\n")
@@ -27,5 +29,7 @@ run_hwe <- function(HLA,
   HWE <- HWE.wrapper(Tab,Output,Verbose)
   BD.out[['HWE']] <- HWE
   rm(HWE)
+
+  return(BD.out)
 
 }

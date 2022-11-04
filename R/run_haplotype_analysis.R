@@ -1,4 +1,4 @@
-#' run_aplotype_analysis
+#' run_haplotype_analysis
 #'
 #' Function to run the haplotype analysis
 #' @param nloci nloci parameter
@@ -13,9 +13,10 @@
 #' @param Output Output parameter
 #' @param Verbose Verbose parameter
 #' @param Cores Cores parameter
-#' @param BD.out BD.out paramter
+#' @param SetName SetName parameter
 #' @param SAFE SAFE parameter
-
+#' @param BD.out BD.out parameter
+#'
 # ======================================================================= ####
 # Haplotype Analysis 'H' ________________________________________________ ####
 
@@ -31,8 +32,9 @@ run_haplotype_analysis <- function(nloci,
                                    Output,
                                    Verbose,
                                    Cores,
-                                   BD.out,
-                                   SAFE){
+                                   SetName,
+                                   SAFE,
+                                   BD.out){
 
   #cat(paste(rep("_",50),collapse="","\n"))
 
@@ -69,6 +71,6 @@ run_haplotype_analysis <- function(nloci,
 
   rm(list=ls()[!(ls() %in% SAFE)])
 
-  return(BD.out)
+  return(list(BD.out,SAFE))
 
 }

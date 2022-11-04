@@ -10,13 +10,17 @@
 #' @param loci.ColNames loci.colNames parameter
 #' @param genos genos parameter
 #' @param grp grp parameter
-#' @param Strict.Bin Strict.Bin parameter
+#' @param Exon Exon parameter,
+#' @param EPL EPL parameter
+#' @param Cores Cores parameter
+#' @param Strict.Bin StrictBin parameter
 #' @param Output Output parameter
 #' @param Verbose Verbose parameter
-#' @param Cores Cores parameter
-#' @param BD.out BD.out parameter
-#' @param SAFE SAFE parameter
 #' @param Release Release parameter
+#' @param SetName SetName parameter
+#' @param SAFE SAFE parameter
+#' @param BD.out BD.out parameter
+
 
 # ======================================================================== ####
 # Amino Acid Level 'A' ___________________________________________________ ####
@@ -30,13 +34,17 @@ run_amino_acid_analysis <- function(UPL.flag,
                                     loci.ColNames,
                                     genos,
                                     grp,
+                                    Exon,
+                                    EPL,
+                                    Cores,
                                     Strict.Bin,
                                     Output,
                                     Verbose,
-                                    Cores,
-                                    BD.out,
+                                    Release,
+                                    SetName,
                                     SAFE,
-                                    Release){
+                                    BD.out
+                                    ){
 
     #cat(paste(rep("_",50),collapse=""))
 
@@ -47,8 +55,10 @@ run_amino_acid_analysis <- function(UPL.flag,
 
     A.list <- A.wrapper(loci,
                         loci.ColNames,
-                        genos,grp,
-                        Exon,EPL,
+                        genos,
+                        grp,
+                        Exon,
+                        EPL,
                         Cores,
                         Strict.Bin,
                         Output,
@@ -73,5 +83,7 @@ run_amino_acid_analysis <- function(UPL.flag,
                                      table=A.list[['FB']])
 
     rm(list=ls()[!(ls() %in% SAFE)])
+
+    return(list(BD.out,SAFE))
 
 }

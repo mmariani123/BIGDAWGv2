@@ -29,7 +29,11 @@
 #' # Hardy-Weinberg and Locus analysis ignoring missing data
 #' # Significant locus associations with phenotype at all but DQB1
 #' # BIGDAWG(Data="HLA_data", Run.Tests="L", Missing="ignore")
-#'}
+#'
+#' # Hardy-Weinberg analysis trimming data to 2-Field resolution with no output to files (console only)
+#' # Significant locus deviation at DQB1
+#' BIGDAWG(Data="HLA_data", Run.Tests="HWE", Trim=TRUE, Res=2, Output=FALSE)
+#' }
 BIGDAWGv2 <- function(Data,
          HLA=TRUE,
          Run.Tests,
@@ -474,7 +478,7 @@ BIGDAWG_human <-
 
   case_control_summary(Trim=Trim,
                        Tab=Tab,
-                       res=res,
+                       Res=Res,
                        HLA=HLA,
                        Verbose=Verbose,
                        Output=Output)
@@ -544,11 +548,12 @@ if(Output){
 
   if("HWE" %in% Run){
 
-    BD.out <- run_hwe_anlalysis(HLA=HLA,
-                      TRIM=TRIM,
-                      TAB=TAB,
+    BD.out <- run_hwe_analysis(HLA=HLA,
+                      Trim=Trim,
+                      Tab=Tab,
                       Output=Output,
-                      Verbose=Verbose)
+                      Verbose=Verbose,
+                      BD.out=BD.out)
 
   } #END HARDY-WEINBERG
 
@@ -618,20 +623,24 @@ if(Output){
 
       if("H" %in% Run){
 
-        BD.out <- run_haplotype_analysis(nloci,
-                                         All.Pairwise,
-                                         SID,
-                               Tabsub,
-                               loci,
-                               loci.ColNames,
-                               genos,
-                               grp,
-                               All.Pairwise,Strict.Bin,
-                               Output,
-                               Verbose,
-                               Cores,
-                               BD.out,
-                               SAFE)
+        output <- run_haplotype_analysis(
+                               nloci=nloci,
+                               All.Pairwise=All.Pairwise,
+                               SID=SID,
+                               Tabsub=Tabsub,
+                               loci=loci,
+                               loci.ColNames=loci.ColNames,
+                               genos=genos,
+                               grp=grp,
+                               Strict.Bin=Strict.Bin,
+                               Output=Output,
+                               Verbose=Verbose,
+                               Cores=Cores,
+                               SAFE=SAFE,
+                               BD.out=BD.out)
+
+        BD.out <- output[[1]]
+        SAFE <- output[[2]]
 
       }
 
@@ -640,15 +649,21 @@ if(Output){
 
       if("L" %in% Run){
 
-        BD.out <- run_locus_analysis(nloci=nloci,
+        BD.out <- run_locus_analysis(
+          nloci=nloci,
+          loci=loci,
           loci.ColNames=loci.ColNames,
-          genos.grp=genos.grp,
+          genos=genos,
+          grp=grp,
           Strict.Bin=Strict.Bin,
           Output=Output,
           Verbose=Verbose,
-          BD.out=BD.out,
           SetName=SetName,
-          SAFE=SAFE)
+          SAFE=SAFE,
+          BD.out=BD.out)
+
+        BD.out <- output[[1]]
+        SAFE <- output[[2]]
 
       }
 
@@ -658,25 +673,29 @@ if(Output){
       if(HLA){
         if("A" %in% Run){
 
-          BD.out <- run_amino_acid_analysis(UPL.flag=UPL.flag,
+          BD.out <- run_amino_acid_analysis(
+            UPL.flag=UPL.flag,
             nloci=nloci,
-            All.Pairwise=ALL.Pairwise,
+            All.Pairwise=All.Pairwise,
             SID=SID,
             Tabsub=Tabsub,
             loci=loci,
-            loci.ColNamesloci.ColNames,
+            loci.ColNames,
             genos=genos,
             grp=grp,
+            Exon=Exon,
+            EPL=EPL,
+            Cores=Cores,
             Strict.Bin=Strict.Bin,
             Output=Output,
             Verbose=Verbose,
-            Cores=Cores,
-            BD.out=BD.out,
-            SAFE=SAFE,
-            Output=Output,
             Release=Release,
-            BD.out=BD.out,
-            SAFE=SAFE)
+            SetName=SetName,
+            SAFE=SAFE,
+            BD.out=BD.out)
+
+          BD.out <- output[[1]]
+          SAFE <- output[[2]]
 
         } #END AMINO ACID
       }#END if(HLA)
@@ -694,8 +713,7 @@ if(Output){
 
     if(Merge.Output){
 
-      merge.output(Run=Run,
-                  BD.out=BD.out,
+      merge_output(BD.out=BD.out,
                   Run=Run,
                   OutDir=OutDir)
 
@@ -708,6 +726,7 @@ if(Output){
 
   BD.out <- end_analysis(Output=Output,
                OutDir=OutDir,
-               BD.out=BD.out)
+               BD.out=BD.out,
+               Return=Return)
 
 } # END FUNCTION
