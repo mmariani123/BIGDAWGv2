@@ -40,7 +40,30 @@ ui <- dashboardPage(
     #   }'
     #),
     #tags$head(tags$script(src = "message-handler.js")),
-    div(
+
+    #ui <- fluidPage(
+    #  tags$style(
+    #    ".first-p {
+    #  color: red;
+    #}
+    ##element {
+    #  color: red;
+    #}
+    #"
+    #  ),
+    #  p(class = "first-p", "Hello World"),
+    #  p("Another text"),
+    #  div(id = "element", "A block")
+    #)
+
+    tags$style(".span_1 {margin-left:15px}"),
+    tags$style(".d_button {margin-left:15px; margin-bottom:10px;}"),
+    tags$style(".text_entry {margin-top:-10px;}"),
+    tags$style("#select {margin-top:-40px;}"),
+    tags$style("#dropdown {margin-top:-15px;}"),
+    tags$style("#run_button {margin-top:20px;}"),
+
+    div(id="run_button",
       #actionButton("Run.Bigdawg", "Run BIGDAWG"),
       tags$div(
       title = paste0("Click this button to run BIGDAWG ",
@@ -72,9 +95,9 @@ ui <- dashboardPage(
                           trigger = "hover",
                           options = NULL)
     ),
-    div(
+    div(id="select",
       selectInput("speciesSelect", "Select Species",
-                  choices = c("HUMAN", "DOG", "MOUSE"),
+                  choices = c("HUMAN", "DOG", "CHICKEN", "COW"),
                   multiple=F,
                   selectize=T,
                   selected="HUMAN",
@@ -86,7 +109,7 @@ ui <- dashboardPage(
                 options = NULL)
     ),
     div(
-      span("HLA"),
+      span("HLA",class="span_1"),
       shinyWidgets::prettyToggle(
         inputId = "HLA",
         label_on = "TRUE",
@@ -106,7 +129,7 @@ ui <- dashboardPage(
                 trigger = "hover",
                 options = NULL)
     ),
-    div(
+    div(id="dropdown",
       selectInput("Run.Tests",
                 "Select Test(s)",
                 choices = c("HWE","H","L","A"),
@@ -121,7 +144,7 @@ ui <- dashboardPage(
                 trigger = "hover",
                 options = NULL)
     ),
-    div(
+    div(class="text_entry",
               textInput("Loci.Set",
               label = "Loci.Set",
               value = 'A;DRB1',
@@ -136,7 +159,7 @@ ui <- dashboardPage(
                         options = NULL)
               #verbatimTextOutput("Loci.Set.value")
     ),
-    div(
+    div(class="text_entry",
               textInput("Exon",
               label="Exon",
               value="3,5,6",
@@ -152,7 +175,7 @@ ui <- dashboardPage(
                         options = NULL)
     ),
     div(
-      span("All.Pairwise"),
+      span("All.Pairwise", class="span_1"),
       shinyWidgets::prettyToggle(
         inputId = "All.Pairwise",
         label_on = "TRUE",
@@ -170,7 +193,7 @@ ui <- dashboardPage(
                 options = NULL)
     ),
     div(
-      span("Trim"),
+      span("Trim", class="span_1"),
       shinyWidgets::prettyToggle(
         inputId = "Trim",
         label_on = "TRUE",
@@ -188,7 +211,7 @@ ui <- dashboardPage(
                 trigger = "hover",
                 options = NULL)
     ),
-    div(
+    div(class="text_entry",
               textInput("Res",
               label="Res",
               value = "2",
@@ -203,7 +226,7 @@ ui <- dashboardPage(
               #verbatimTextOutput("Res.value")
     ),
     div(
-      span("EVS.rm"),
+      span("EVS.rm", class="span_1"),
       shinyWidgets::prettyToggle(
         inputId = "EVS.rm",
         label_on = "TRUE",
@@ -220,7 +243,7 @@ ui <- dashboardPage(
                 trigger = "hover",
                 options = NULL)
     ),
-    div(
+    div(class="text_entry",
               textInput("Missing",
               label="Missing",
               value = "0",
@@ -236,7 +259,7 @@ ui <- dashboardPage(
               #verbatimTextOutput("Missing.value")
     ),
     div(
-      span("Strict.Bin"),
+      span("Strict.Bin", class="span_1"),
       shinyWidgets::prettyToggle(
         inputId = "Strict.Bin",
         label_on = "TRUE",
@@ -252,7 +275,7 @@ ui <- dashboardPage(
                 trigger = "hover",
                 options = NULL)
     ),
-    div(
+    div(class="text_entry",
               textInput("Cores.Lim",
               label="Cores.Lim",
               value = "1L",
@@ -278,7 +301,8 @@ ui <- dashboardPage(
     #),
     div(
       downloadButton("Results.Dir",
-                     "Download Results"),
+                     "Download Results",
+                     class="d_button"),
       bsTooltip(id="Results.Dir",
                 title=paste0("String name of a folder for BIGDAWG output. ",
                              "Subfolder for each locus set will be generated ",
@@ -288,7 +312,7 @@ ui <- dashboardPage(
                 options = NULL)
     ),
     div(
-      span("Return"),
+      span("Return", class="span_1"),
       shinyWidgets::prettyToggle(
         inputId = "Return",
         label_on = "TRUE",
@@ -305,7 +329,7 @@ ui <- dashboardPage(
                 options = NULL)
     ),
     div(
-      span("Output"),
+      span("Output", class="span_1"),
       shinyWidgets::prettyToggle(
         inputId = "Output",
         label_on = "TRUE",
@@ -323,7 +347,7 @@ ui <- dashboardPage(
                 options = NULL)
     ),
     div(
-      span("Merge.Output"),
+      span("Merge.Output", class="span_1"),
       shinyWidgets::prettyToggle(
         inputId = "Merge.Output",
         label_on = "TRUE",
@@ -341,7 +365,7 @@ ui <- dashboardPage(
                 options = NULL)
     ),
     div(
-      span("Verbose"),
+      span("Verbose", class="span_1"),
       shinyWidgets::prettyToggle(
         inputId = "Verbose",
         label_on = "TRUE",
@@ -362,7 +386,8 @@ ui <- dashboardPage(
     ),
     div(
       downloadButton("Download.Test.Data",
-                    "Download Test Data"),
+                    "Download Test Data",
+                    class="d_button"),
         bsTooltip(id="Download.Test.Data",
                   title=paste0("Download the HLA test data file (.txt)"),
                   placement = "bottom",
@@ -386,18 +411,29 @@ ui <- dashboardPage(
     #Merge.Output     = FALSE,
     #Verbose          = TRUE
   ),
+
   dashboardBody(
+    tabBox(title=NULL,
+           width=12,
+           id = "tabset1",
+           height = "1300px",
+    tabPanel(tabName = "run.panel","Run",
     # Boxes need to be put in a row (or column)
+    fluidRow(
+      tableOutput("contents")
+    )
+    ),
+    tabPanel(tabName = "citation.panel", "Citation",
     fluidRow(
       div(
         HTML(paste0("Welcome to BIGDAWGv2. Upload your input LA data file, fill ",
-        "out the parameters on the left, and hit the 'Run BIGDAWG' button. ",
-        "results will be available via download using the download button and ",
-        "output to the screen as well. The test data can also be downloaded ",
-        "(tab-delimited .txt format) by clicking the 'download test data' ",
-        "button in the parameters sections. For further information, ",
-        "consult the documentation. We hope that you enjoy using BIGDDAWG."),
-        "<br><br> <b>Citation</b> <br> Data sets and functions for chi-squared Hardy-Weinberg and case-control
+                    "out the parameters on the left, and hit the 'Run BIGDAWG' button. ",
+                    "results will be available via download using the download button and ",
+                    "output to the screen as well. The test data can also be downloaded ",
+                    "(tab-delimited .txt format) by clicking the 'download test data' ",
+                    "button in the parameters sections. For further information, ",
+                    "consult the documentation. We hope that you enjoy using BIGDDAWG."),
+             "<br><br> <b>Citation</b> <br> Data sets and functions for chi-squared Hardy-Weinberg and case-control
         association tests of highly polymorphic genetic data [e.g., human leukocyte antigen
         (HLA) data]. Performs association tests at multiple levels of polymorphism
         (haplotype, locus and HLA amino-acids) as described in Pappas DJ, Marin W, Hollenbach
@@ -407,20 +443,37 @@ ui <- dashboardPage(
         style="text-align:justify; color:black; margin:20px;"
       ),
       div(
-      style="margin:20px;"
+        style="margin:20px;"
       )
-    ),
-    fluidRow(
-      tableOutput("contents")
+    )
+    )
     )
   )
 )
+
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
 
     #observeEvent(input$Run.Bigdawg, {
     #  session$sendCustomMessage(type = 'testmessage',
     #                            message = 'Thank you for trying BIGDAWG')
+    #})
+
+    #observe({
+    #
+    #  loci.vals <- switch(input$speciesSelect,
+    #         "HUMAN" = "A",
+    #         "DOG" = "B",
+    #         "CHICKEN" = "In Progress",
+    #         "COW" = "In Progress")
+    #
+    #  updateSelectInput(
+    #    session = session,
+    #    inputId = "Loci",
+    #    choices = loci.vals,
+    #    selected = head(loci.vals, 1)
+    #  )
+    #
     #})
 
     bigdawg.output <- eventReactive(input$Run.Bigdawg, {
