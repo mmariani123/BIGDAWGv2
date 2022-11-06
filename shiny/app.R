@@ -16,6 +16,10 @@ library(stringr)
 library(shinyBS) #Tooltip doesn't seem to work with bsButton or action button
 library(BIGDAWG)
 library(BIGDAWGv2)
+library(data.table)
+library(dplyr)
+library(magrittr)
+library(shinyjs)
 #library(shiny.fluent)
 #devtools::load_all()
 
@@ -421,6 +425,7 @@ ui <- dashboardPage(
         alert('Welcome to BIGDAWGv2!');
       });"
     ),
+    useShinyjs(),
 
     #  "$(document).ready(function(){
     #    Shiny.addCustomMessageHandler(\'alert\',
@@ -541,7 +546,7 @@ server <- function(input, output, session) {
       #   input$Verbose){
       print(input$Data$datapath)
       print(input$Loci.Set)
-      bigdawg.results <- BIGDAWGv2::BIGDAWGv2(
+      bigdawg.results <- BIGDAWGv2(
         Data         = input$Data$datapath,
         HLA          = input$HLA,
         Run.Tests    = input$Run.Tests,
@@ -654,6 +659,7 @@ server <- function(input, output, session) {
                               list.dirs(full.names = TRUE),
                               value=TRUE)
         print(output.folder)
+        logjs(output.folder)
         if(.Platform$OS.type=="windows"){
           system(paste0("powershell Compress-Archive ",
                         "'",
