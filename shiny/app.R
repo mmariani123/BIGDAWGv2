@@ -415,6 +415,7 @@ ui <- dashboardPage(
   dashboardBody(
     # Listen for messages
     tags$script(
+      type="text/javascript",
       "$(document).on('shiny:connected',
                      function(event){
         alert('Welcome to BIGDAWGv2!');
