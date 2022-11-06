@@ -51,11 +51,6 @@ BIGDAWGv2 <- function(Data,
          Output=TRUE,
          Merge.Output=FALSE,
          Verbose=TRUE){
-#' # Hardy-Weinberg analysis trimming data to 2-Field resolution with no output to files (console only)
-#' # Significant locus deviation at DQB1
-#' BIGDAWG(Data="HLA_data", Run.Tests="HWE", Trim=TRUE, Res=2, Output=FALSE)
-#' }
-BIGDAWG_human <-
 
   options(warn=-1)
 
