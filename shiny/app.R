@@ -413,6 +413,21 @@ ui <- dashboardPage(
   ),
 
   dashboardBody(
+    # Listen for messages
+    tags$script(
+      "$(document).on('shiny:connected',
+                     function(event){
+        alert('Welcome to BIGDAWGv2!');
+      });"
+    ),
+
+    #  "$(document).ready(function(){
+    #    Shiny.addCustomMessageHandler(\'alert\',
+    #      function(data){
+    #            new Notification(data.msg);
+    #      })
+    #  });"
+
     tabBox(title=NULL,
            width=12,
            id = "tabset1",
@@ -420,39 +435,62 @@ ui <- dashboardPage(
     tabPanel(tabName = "run.panel","Run",
     # Boxes need to be put in a row (or column)
     fluidRow(
+      div(
+      HTML("Welcome to BIGDAWGv2. Upload your input LA data file, fill
+            out the parameters on the left, and hit the 'Run BIGDAWG' button.
+            results will be available via download using the download button and
+            output to the screen as well. The test data can also be downloaded
+            (tab-delimited .txt format) by clicking the 'download test data'
+            button in the parameters sections. For further information,
+            consult the documentation. We hope that you enjoy using BIGDDAWG."),
+            style="text-align:justify;
+                   color:black;
+                   margin-top:5px;
+                   margin-right:20px;
+                   margin-left:20px;"),
       tableOutput("contents")
     )
     ),
     tabPanel(tabName = "citation.panel", "Citation",
     fluidRow(
       div(
-        HTML(paste0("Welcome to BIGDAWGv2. Upload your input LA data file, fill ",
-                    "out the parameters on the left, and hit the 'Run BIGDAWG' button. ",
-                    "results will be available via download using the download button and ",
-                    "output to the screen as well. The test data can also be downloaded ",
-                    "(tab-delimited .txt format) by clicking the 'download test data' ",
-                    "button in the parameters sections. For further information, ",
-                    "consult the documentation. We hope that you enjoy using BIGDDAWG."),
-             "<br><br> <b>Citation</b> <br> Data sets and functions for chi-squared Hardy-Weinberg and case-control
+        HTML('Citation:<br><br>"Data sets and functions for chi-squared Hardy-Weinberg and case-control
         association tests of highly polymorphic genetic data [e.g., human leukocyte antigen
         (HLA) data]. Performs association tests at multiple levels of polymorphism
         (haplotype, locus and HLA amino-acids) as described in Pappas DJ, Marin W, Hollenbach
         JA, Mack SJ (2016) <doi:10.1016/j.humimm.2015.12.006>. Combines rare variants to a
         common class to account for sparse cells in tables as described by Hollenbach JA,
-        Mack SJ, Thomson G, Gourraud PA (2012) <doi:10.1007/978-1-61779-842-9_14>."),
-        style="text-align:justify; color:black; margin:20px;"
-      ),
-      div(
-        style="margin:20px;"
+        Mack SJ, Thomson G, Gourraud PA (2012) <doi:10.1007/978-1-61779-842-9_14>."
+             <br><br> *Additional updates in progress for BIGDAWGv2 by Michael P. Mariani and Richard Single'),
+        style="text-align:justify;
+               color:black;
+               margin-left:20px;
+               margin-right:20px;
+               margin-top:10px;"
       )
     )
-    )
+    ),
+    tabPanel(tabName = "debug.panel", "Debug",
+      fluidRow(infoBoxOutput("info.out"))
+      )
     )
   )
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
+
+#Javascripting:
+
+  #observeEvent(eventExpr=input$Run.Bigdawg,
+  #             handlerExpr={
+  #              Sys.sleep(2);
+  #              session$sendCustomMessage(
+  #                type = 'alert',
+  #                message = list(msg = "my message")
+  #              )
+  #            }
+  #           )
 
     #observeEvent(input$Run.Bigdawg, {
     #  session$sendCustomMessage(type = 'testmessage',
@@ -475,6 +513,13 @@ server <- function(input, output, session) {
     #  )
     #
     #})
+
+    output$info.out <- renderInfoBox({
+      infoBox("Debug output below",
+              input$debug.panel,
+              icon = icon("info-circle")
+              )
+    })
 
     bigdawg.output <- eventReactive(input$Run.Bigdawg, {
       #if(input$HLA           &
@@ -581,21 +626,54 @@ server <- function(input, output, session) {
     #  print(input$Results.Dir.folder)
     #})
 
+    #output$Results.Dir <- downloadHandler(
+    #  filename = function(){
+    #    paste0("bigdawg_output_", Sys.Date(), ".txt")
+    #  },
+    #  content = function(file){
+    #    #writeLines(paste(text,
+    #    #                 collapse = ", "),
+    #    #           file)
+    #    write.table(bigdawg.output(),
+    #                file,
+    #                col.names = FALSE,
+    #                row.names = FALSE,
+    #                quote = FALSE,
+    #                sep="\t")
+    #  }
+    #)
+
+    #Can be zipped as well:
     output$Results.Dir <- downloadHandler(
-      filename = function(){
-        paste0("bigdawg_output_", Sys.Date(), ".txt")
+      filename <- function(){
+        return("BIGDAWGv2_results.zip")
       },
-      content = function(file){
-        #writeLines(paste(text,
-        #                 collapse = ", "),
-        #           file)
-        write.table(bigdawg.output(),
-                    file,
-                    col.names = FALSE,
-                    row.names = FALSE,
-                    quote = FALSE,
-                    sep="\t")
-      }
+      content <- function(file){
+        output.folder <- grep("output ",
+                              list.dirs(full.names = TRUE),
+                              value=TRUE)
+        print(output.folder)
+        if(.Platform$OS.type=="windows"){
+          system(paste0("powershell Compress-Archive ",
+                        "'",
+                        output.folder,
+                        "'",
+                        " ",
+                        "'",
+                        output.folder,
+                        ".zip",
+                        "'"))
+        }else if(.Platform$OS.type=="linux"){
+          system("zip -r ",
+                 output.folder,
+                 ".zip ",
+                 output.folder)
+        }
+        file.copy(paste0(output.folder,".zip"), file)
+        unlink(output.folder, recursive=TRUE)
+        unlink(paste0(output.folder,".zip"), recursive=TRUE)
+      },
+      contentType = "application/zip"
     )
 
     output$Return.value <- renderText({

@@ -5,4 +5,7 @@ importFrom("stats", "chisq.test", "fisher.test", "na.omit", "pchisq", "qnorm", "
 importFrom("utils", "data", "combn", "download.file", "packageVersion", "read.table", "write.table","write.csv")
 import("httr")
 import("BIGDAWG")
+import("dplyr")
+import("data.table")
+import("magrittr")
 #importFrom("BIGDAWG","HLA_data","ExonPtnList")
