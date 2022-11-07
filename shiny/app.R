@@ -418,14 +418,14 @@ ui <- dashboardPage(
 
   dashboardBody(
     # Listen for messages
-    tags$script(
-      type="text/javascript",
-      "$(document).on('shiny:connected',
-                     function(event){
-        alert('Welcome to BIGDAWGv2!');
-      });"
-    ),
-    useShinyjs(),
+    #tags$script(
+    #  type="text/javascript",
+    #  "$(document).on('shiny:connected',
+    #                 function(event){
+    #    alert('Welcome to BIGDAWGv2!');
+    #  });"
+    #),
+    #useShinyjs(),
 
     #  "$(document).ready(function(){
     #    Shiny.addCustomMessageHandler(\'alert\',
@@ -659,7 +659,7 @@ server <- function(input, output, session) {
                               list.dirs(full.names = TRUE),
                               value=TRUE)
         print(output.folder)
-        logjs(output.folder)
+        #logjs(output.folder)
         if(.Platform$OS.type=="windows"){
           system(paste0("powershell Compress-Archive ",
                         "'",
