@@ -418,13 +418,14 @@ ui <- dashboardPage(
 
   dashboardBody(
     # Listen for messages
-    #tags$script(
-    #  type="text/javascript",
-    #  "$(document).on('shiny:connected',
-    #                 function(event){
-    #    alert('Welcome to BIGDAWGv2!');
-    #  });"
-    #),
+    tags$script(
+      type="text/javascript",
+      "$(document).on('shiny:connected',
+                     function(event){
+        alert('Welcome to BIGDAWGv2!');
+      });"
+    ),
+
     #useShinyjs(),
 
     #  "$(document).ready(function(){
@@ -671,10 +672,10 @@ server <- function(input, output, session) {
                         ".zip",
                         "'"))
         }else if(.Platform$OS.type=="linux"){
-          system("zip -r ",
+          system(paste0("zip -r ",
                  output.folder,
                  ".zip ",
-                 output.folder)
+                 output.folder))
         }
         file.copy(paste0(output.folder,".zip"), file)
         unlink(output.folder, recursive=TRUE)
