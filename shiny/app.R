@@ -546,7 +546,7 @@ server <- function(input, output, session) {
       #   input$Verbose){
       print(input$Data$datapath)
       print(input$Loci.Set)
-      bigdawg.results <- BIGDAWGv2::BIGDAWGv2(
+      bigdawg.results <- BIGDAWGv2(
         Data         = input$Data$datapath,
         HLA          = input$HLA,
         Run.Tests    = input$Run.Tests,
