@@ -660,6 +660,15 @@ server <- function(input, output, session) {
                               list.dirs(full.names = TRUE),
                               value=TRUE)
         print(output.folder)
+        print(.Platform$OS.type)
+        print(paste0("zip -r ",
+                     "'",
+                     output.folder,
+                     ".zip",
+                     "' ",
+                     "'",
+                     output.folder,
+                     "'"))
         #logjs(output.folder)
         if(.Platform$OS.type=="windows"){
           system(paste0("powershell Compress-Archive ",
@@ -671,11 +680,16 @@ server <- function(input, output, session) {
                         output.folder,
                         ".zip",
                         "'"))
-        }else if(.Platform$OS.type=="linux"){
+        }else if(.Platform$OS.type=="unix"){
           system(paste0("zip -r ",
+                        "'",
                  output.folder,
-                 ".zip ",
-                 output.folder))
+                 ".zip",
+                 "' ",
+                 "'",
+                 output.folder,
+                 "'"))
+          system("ls -l | grep .zip")
         }
         file.copy(paste0(output.folder,".zip"), file)
         unlink(output.folder, recursive=TRUE)
