@@ -6,7 +6,7 @@ importFrom("utils", "data", "combn", "download.file", "packageVersion", "read.ta
 importFrom("shinyjs", "logjs")
 import("httr")
 import("BIGDAWG")
+import("magrittr")
 #import("dplyr")
 #import("data.table")
-#import("magrittr")
 #importFrom("BIGDAWG","HLA_data","ExonPtnList")

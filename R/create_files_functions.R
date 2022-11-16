@@ -17,6 +17,7 @@ get_files <- function(fileUrl,
                       fileOutNames){
   #downloads files such as *_prot.txt alignment files,
   #_nom_p.txt files, .fasta files, etc. for a select species.
+  setwd("./data")
   lapply(fileDlNames,
         FUN = function(x){
               download.file(
@@ -35,13 +36,19 @@ get_files <- function(fileUrl,
 #' @param groupSize the size of the chunks of amino acid strings
 #' the default is 10, and they are output as tab-separated columns
 #' the output files(s)
+#' @param allBases if set to FALSE, then only mismatched bases
+#' will be included and the remainder will be set to '-' .
+#' @param species human: hla , dog: dla, cow: bla, chicken: cla
 #' @note This function is for general use
 make_prot_file <- function(filesIn=NULL,
-                           groupSize=10){
+                           groupSize=10,
+                           allBases=TRUE,
+                           species='hla'){
   lapply(filesIn,
          FUN = function(x){
-           print(paste0("Processing file ",x))
-           df <- read.table(x,
+           fullPath <- paste0("./data/",species,"/",x)
+           print(paste0("Processing file ",fullPath))
+           df <- read.table(fullPath,
                       sep="",
                       header = FALSE,
                       stringsAsFactors = FALSE)
@@ -52,27 +59,45 @@ make_prot_file <- function(filesIn=NULL,
            groupNamesFinal <- c()
            dfMat <- data.frame()
            for(i in 1:length(uniqProtLengths)){
-             dfNow <- df[which(df[,3]==uniqProtLengths[i]),]
-             choppedStrings <- matrix(
-                                unlist(
-                                  strsplit(
-                                    gsub(paste0("(.{",groupSize,"})"), "\\1 ", dfNow[,2], perl = FALSE),
-                                    split=" "
+              dfNow <- df[which(df[,3]==uniqProtLengths[i]),]
+              if(allBases==FALSE){
+                for(j in 1:nrow(dfNow)){
+                  if(j!=1){
+                    #print(dfNow[1,2])
+                    #print(dfNow[j,2])
+                  matchInd <- mapply(function(x, y) which(x == y),
+                                     strsplit(dfNow[1,2], split=""),
+                                     strsplit(dfNow[j,2], split=""))
+                    if(length(matchInd[[1]])!=0){
+                      for(k in seq_along(matchInd)){
+                        substring(dfNow[j,2],
+                                  matchInd[k],
+                                  matchInd[k]) <- "-"
+                      }
+                    }
+                  }
+                }
+              }
+              choppedStrings <- matrix(
+                                  unlist(
+                                    strsplit(
+                                      gsub(paste0("(.{",groupSize,"})"), "\\1 ", dfNow[,2], perl = FALSE),
+                                      split=" "
+                                    ),
                                   ),
-                                ),
-                                  ncol=ifelse(i==1,
-                                              ceiling(uniqProtLengths[1]/groupSize),
-                                              ceiling(length((uniqProtLengths[i-1]+1):uniqProtLengths[i])/groupSize)
-                                              ),
-                                  byrow = TRUE
-                                )
+                                    ncol=ifelse(i==1,
+                                                ceiling(uniqProtLengths[1]/groupSize),
+                                                ceiling(length((uniqProtLengths[i-1]+1):uniqProtLengths[i])/groupSize)
+                                                ),
+                                    byrow = TRUE
+                                  )
              groupNamesFinal <- dfNow[,1]
              dfCol <- cbind(groupNamesFinal,
                             choppedStrings)
              dfMat <- plyr::rbind.fill(dfMat,data.frame(dfCol))
             }
            lengths <- c("Prot",1,unique(df[,3]))
-           outFile <- paste0(x,"prot.txt")
+           outFile <- paste0("./data/",species,"/",x,"prot.txt")
            fileConn <- file(outFile)
            writeLines(paste(lengths,collapse = "\t"), fileConn)
            close(fileConn)
@@ -84,7 +109,6 @@ make_prot_file <- function(filesIn=NULL,
                        quote = FALSE,
                        sep="\t")
         })
-
 }
 
 #' make_prot_file
@@ -92,9 +116,11 @@ make_prot_file <- function(filesIn=NULL,
 #' Function to create the _nom_p.txt files from the 'alnprot.txt'
 #' files created with 'make_prot_file()'
 #' @param filesInP These are the protein files created with
+#' @param species human: hla , dog: dla, cow: bla, chicken: cla
 #' make_prot_file(),
 #' @note This function is for general use
-make_p_group_file <- function(filesInP){
+make_p_group_file <- function(filesInP,
+                              species='hla'){
   dfs <- lapply(filesInP,
          FUN=function(x){
            dfIn <- readLines(x)
@@ -110,7 +136,7 @@ make_p_group_file <- function(filesInP){
            pIds <- pGroupsSplit4 %>% unique()
            #print(length(pIds))
            geneTmp <- gsub("(.*)\\*.*","\\1", pGroups[1], perl=TRUE)
-           fileOutP <- paste0(x,"_nom_p.txt")
+           fileOutP <- paste0("./data/",species,"/",x,"_nom_p.txt")
            if(file.exists(fileOutP)){
              print(paste0(fileOutP, "aleady exists, removing ..."))
              file.remove(fileOutP)
