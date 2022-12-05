@@ -4,6 +4,8 @@
 #' @param fileUrl the Url of the file, not including the file name
 #' @param fileDlNames the file name
 #' @param fileOutNames the desired names for the downloaded files
+#' @param species the desired specia, e.g., "dla", will affect which
+#' folder the files are downloaded to.
 #' @note This function is for general use
 #' @examples
 #' \dontrun{
@@ -14,19 +16,28 @@
 #' }
 get_files <- function(fileUrl,
                       fileDlNames,
-                      fileOutNames){
+                      fileOutNames,
+                      species){
   #downloads files such as *_prot.txt alignment files,
   #_nom_p.txt files, .fasta files, etc. for a select species.
-  setwd("./data")
+  #setwd("./data")
   lapply(fileDlNames,
         FUN = function(x){
               download.file(
               url = paste0(fileUrl, x),
-              destfile=x,
+              destfile=paste0("./data/",species,"/",x),
               method="libcurl")
           }
         )
 }
+
+#DRB1 starts at -29,
+#DQA1 starts at -23,
+#DQB1 starts at -32,
+#DPA1 starts at -31
+#and DPB1 starts at -29,
+#so the protein alignments
+#all start at -30 or -40
 
 #' make_prot_file
 #'
@@ -39,11 +50,14 @@ get_files <- function(fileUrl,
 #' @param allBases if set to FALSE, then only mismatched bases
 #' will be included and the remainder will be set to '-' .
 #' @param species human: hla , dog: dla, cow: bla, chicken: cla
+#' @param pos the offset position to account for leader peptides for
+#' the gene being anaylyzed.
 #' @note This function is for general use
 make_prot_file <- function(filesIn=NULL,
                            groupSize=10,
                            allBases=TRUE,
-                           species='hla'){
+                           species='hla',
+                           pos=29){
   lapply(filesIn,
          FUN = function(x){
            fullPath <- paste0("./data/",species,"/",x)
@@ -57,46 +71,63 @@ make_prot_file <- function(filesIn=NULL,
            protLengths  <- df[,3]
            uniqProtLengths <- as.numeric(unique(protLengths))
            groupNamesFinal <- c()
+           print(colnames(df))
+           casted <- aggregate(df, V2 ~ V1, FUN=paste, collapse = "")
+           #print(casted)
+           #stop()
            dfMat <- data.frame()
-           for(i in 1:length(uniqProtLengths)){
-              dfNow <- df[which(df[,3]==uniqProtLengths[i]),]
+           #for(i in 1:length(uniqProtLengths)){
+           #dfNow <- df[which(df[,3]==uniqProtLengths[i]),]
               if(allBases==FALSE){
-                for(j in 1:nrow(dfNow)){
+                for(j in 1:nrow(casted)){
                   if(j!=1){
                     #print(dfNow[1,2])
                     #print(dfNow[j,2])
                   matchInd <- mapply(function(x, y) which(x == y),
-                                     strsplit(dfNow[1,2], split=""),
-                                     strsplit(dfNow[j,2], split=""))
+                                     strsplit(casted[1,2], split=""),
+                                     strsplit(casted[j,2], split=""))
                     if(length(matchInd[[1]])!=0){
                       for(k in seq_along(matchInd)){
-                        substring(dfNow[j,2],
+                        substring(casted[j,2],
                                   matchInd[k],
                                   matchInd[k]) <- "-"
                       }
                     }
+
+
                   }
                 }
               }
-              choppedStrings <- matrix(
-                                  unlist(
-                                    strsplit(
-                                      gsub(paste0("(.{",groupSize,"})"), "\\1 ", dfNow[,2], perl = FALSE),
-                                      split=" "
-                                    ),
-                                  ),
-                                    ncol=ifelse(i==1,
-                                                ceiling(uniqProtLengths[1]/groupSize),
-                                                ceiling(length((uniqProtLengths[i-1]+1):uniqProtLengths[i])/groupSize)
-                                                ),
-                                    byrow = TRUE
-                                  )
-             groupNamesFinal <- dfNow[,1]
-             dfCol <- cbind(groupNamesFinal,
-                            choppedStrings)
-             dfMat <- plyr::rbind.fill(dfMat,data.frame(dfCol))
-            }
-           lengths <- c("Prot",1,unique(df[,3]))
+              #account for leader peptide here:
+              finalLength <- uniqProtLengths + pos
+              repDots <- paste(rep(".",times=pos),collapse="")
+              pepNow <- paste0(repDots,casted[,2])
+              print(pepNow)
+
+              choppedStrings <- array(NA,
+                                      c(nrow=nrow(casted),
+                                      ncol=ceiling((max(uniqProtLengths)+pos)/groupSize),
+                                      groupSize)
+              )
+
+              pepValues <- unlist(
+                strsplit(
+                  gsub(paste0("(.{",groupSize,"})"), "\\1 ",
+                       pepNow,
+                       perl = TRUE),
+                  split=" "),
+              )
+
+              nCol<- 1:ceiling((max(uniqProtLengths)+pos)/groupSize)
+              nRow <- nrow(casted)
+
+              for(i in 1:length(pepValues)){
+                  choppedStrings[ceiling(i/13),i,] <- pepValues[i]
+              }
+
+              dfMat <- choppedStrings
+
+           lengths <- c("Prot",as.integer(-pos),1,unique(df[,3]))
            outFile <- paste0("./data/",species,"/",x,"prot.txt")
            fileConn <- file(outFile)
            writeLines(paste(lengths,collapse = "\t"), fileConn)
@@ -108,7 +139,9 @@ make_prot_file <- function(filesIn=NULL,
                        row.names = FALSE,
                        quote = FALSE,
                        sep="\t")
+           #stop()
         })
+
 }
 
 #' make_prot_file
@@ -123,7 +156,8 @@ make_p_group_file <- function(filesInP,
                               species='hla'){
   dfs <- lapply(filesInP,
          FUN=function(x){
-           dfIn <- readLines(x)
+           print(x)
+           dfIn <- readLines(paste0("./data/",species,"/",x))
            comments  <- dfIn[which(grepl(pattern = "^#", dfIn))]
            protHead  <- dfIn[which(grepl(pattern = "^Prot", dfIn))]
            sequences <- dfIn[which(!grepl(pattern = "^Prot|^#", dfIn))]
