@@ -191,3 +191,100 @@ make_p_group_file <- function(filesInP,
            sink()
          })
 }
+
+#' make_prot_file
+#'
+#' Function to create the _nom_p.txt files from the 'alnprot.txt'
+#' files created with 'make_prot_file()'
+#' @param x x param
+#' @param groupSize groupSize param
+#' @param allBases allBases param
+#' @param species species param
+#' @param pos pos param
+#' make_prot_file(),
+#' @note This function is for general use
+make_prot <- function(x = fileOutNamesProt[1],
+                      groupSize = 10,
+                      allBases = FALSE,
+                      species = "dla",
+                      pos=29){
+  fullPath <- paste0("./data/",species,"/",x)
+  print(paste0("Processing file ",fullPath))
+  df <- read.table(fullPath,
+                   sep="",
+                   header = FALSE,
+                   stringsAsFactors = FALSE)
+  groupNames   <- df[,1]
+  strings      <- df[,2]
+  protLengths  <- df[,3]
+  uniqProtLengths <- as.numeric(unique(protLengths))
+  groupNamesFinal <- c()
+  print(colnames(df))
+  casted <- aggregate(df, V2 ~ V1, FUN=paste, collapse = "")
+  #print(casted)
+  #stop()
+  dfMat <- data.frame()
+  #for(i in 1:length(uniqProtLengths)){
+  #dfNow <- df[which(df[,3]==uniqProtLengths[i]),]
+  if(allBases==FALSE){
+    for(j in 1:nrow(casted)){
+      if(j!=1){
+        #print(dfNow[1,2])
+        #print(dfNow[j,2])
+        matchInd <- mapply(function(x, y) which(x == y),
+                           strsplit(casted[1,2], split=""),
+                           strsplit(casted[j,2], split=""))
+        if(length(matchInd[[1]])!=0){
+          for(k in seq_along(matchInd)){
+            substring(casted[j,2],
+                      matchInd[k],
+                      matchInd[k]) <- "-"
+          }
+        }
+      }
+    }
+  }
+  #account for leader peptide here:
+  finalLength <- uniqProtLengths + pos
+  repDots <- paste(rep(".",times=pos),collapse="")
+  pepNow <- paste0(repDots,casted[,2])
+  print(pepNow)
+
+  choppedStrings <- array(rep("NA",times=10),
+                          c(nrow=nrow(casted),
+                            ncol=ceiling((max(uniqProtLengths)+pos)/groupSize),
+                            1)
+  )
+
+  pepValues <- unlist(
+    strsplit(
+      gsub(paste0("(.{",groupSize,"})"), "\\1 ",
+           pepNow,
+           perl = TRUE),
+      split=" "),
+  )
+
+  nCol<- ceiling((max(uniqProtLengths)+pos)/groupSize)
+  nRow <- nrow(casted)
+
+  for(i in 1:length(pepValues)){
+    choppedStrings[ceiling(i/nCol),ifelse(i%%nCol!=0,i%%nCol,nCol),] <- pepValues[i]
+    print(i)
+  }
+
+  dfMat <- choppedStrings
+
+  lengths <- c("Prot",as.integer(-pos),1,unique(df[,3]))
+  outFile <- paste0("./data/",species,"/",x,"prot.txt")
+  fileConn <- file(outFile)
+  writeLines(paste(lengths,collapse = "\t"), fileConn)
+  close(fileConn)
+  write.table(dfMat,
+              file=outFile,
+              append=TRUE,
+              col.names = FALSE,
+              row.names = FALSE,
+              quote = FALSE,
+              sep="\t")
+  #stop()
+}
