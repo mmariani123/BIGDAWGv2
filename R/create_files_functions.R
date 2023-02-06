@@ -39,6 +39,165 @@ get_files <- function(fileUrl,
 #so the protein alignments
 #all start at -30 or -40
 
+#' make_prot
+#'
+#' Function to create the .alnprot.txt files from the
+#' files from the '-protein.aln' files hosted on GitHub
+#' @param fileIn Input file paths
+#' @param groupSize the size of the chunks of amino acid strings
+#' the default is 10, and they are output as tab-separated columns
+#' the output files(s)
+#' @param allBases if set to FALSE, then only mismatched bases
+#' will be included and the remainder will be set to '-' .
+#' @param species human: hla , dog: dla, cow: bla, chicken: cla
+#' @param pos the offset position to account for leader peptides for
+#' the gene being anaylyzed.
+#' @note This function is for general use
+make_prot <- function(x = fileIn,
+                      groupSize = 10,
+                      allBases = FALSE,
+                      species = "dla",
+                      pos=29){
+  fullPath <- paste0("./data/",species,"/",x)
+  print(paste0("Processing file ",fullPath))
+  df <- read.table(fullPath,
+                   sep="",
+                   header = FALSE,
+                   stringsAsFactors = FALSE)
+  groupNames   <- df[,1]
+  strings      <- df[,2]
+  protLengths  <- df[,3]
+  uniqProtLengths <- as.numeric(unique(protLengths))
+  groupNamesFinal <- c()
+  print(colnames(df))
+  casted <- aggregate(df, V2 ~ V1, FUN=paste, collapse = "")
+
+  if(length(unique(nchar(casted$V2)))!=1){
+    dupEntries <- which(unique(nchar(casted$V2)!=max(uniqProtLengths)))
+    stop(paste0('There are duplicated entries in the file!',
+                ' near lines ',
+                paste(
+                  as.character(
+                    which(nchar(casted$V2)!=max(uniqProtLengths))
+                  ),
+                  collapse=",")
+    )
+    )
+  }
+  #print(casted)
+  #stop()
+  dfMat <- data.frame()
+  #for(i in 1:length(uniqProtLengths)){
+  #dfNow <- df[which(df[,3]==uniqProtLengths[i]),]
+  if(allBases==FALSE){
+    for(j in 1:nrow(casted)){
+      if(j!=1){
+        #print(dfNow[1,2])
+        #print(dfNow[j,2])
+        matchInd <- mapply(function(x, y) which(x == y),
+                           strsplit(casted[1,2], split=""),
+                           strsplit(casted[j,2], split=""))
+        if(length(matchInd[[1]])!=0){
+          for(k in seq_along(matchInd)){
+            substring(casted[j,2],
+                      matchInd[k],
+                      matchInd[k]) <- "-"
+          }
+        }
+      }
+    }
+  }
+  #account for leader peptide here:
+  leaderPad <- plyr::round_any(pos, 10, f=ceiling) - pos
+  repDots <- paste(rep(" ", times=leaderPad), collapse="")
+  pepNow <- paste0(repDots, casted[,2])
+  print(pepNow)
+
+  choppedStrings <- array(rep("NA", times=10),
+                          c(nrow=nrow(casted),
+                            ncol=ceiling((max(uniqProtLengths)+leaderPad)/groupSize),
+                            1)
+  )
+
+  pepValues <-
+    unlist(
+      strsplit(
+        pepNow,
+        split = paste0("(?<=.{",groupSize,"})"),
+        perl = TRUE
+      )
+    )
+
+  nCol <- ceiling((max(uniqProtLengths)+leaderPad)/groupSize)
+  nRow <- nrow(casted)
+  pepValues <- paste0(pepValues,rep("",nCol*nRow-length(pepValues)))
+
+  for(i in 1:length(pepValues)){
+    choppedStrings[ceiling(i/nCol),ifelse(i%%nCol!=0,i%%nCol,nCol),] <-
+      pepValues[i]
+    print(i)
+  }
+
+  dfMat <- choppedStrings
+  dfMat <- abind(array(rep(unique(df$V1)
+  ),
+  c(nrow=nrow(dfMat),ncol=1,1)
+  ),
+  dfMat,
+  along = 2)
+
+  lengths <- c(as.integer(-pos)-leaderPad, as.integer(-pos), 1, unique(df[,3]))
+
+  outFile <- paste0("./data/",species,"/",x,"prot.txt")
+
+  protHeader <- paste0(
+    '# file: ',outFile,'\n',
+    '# date: ','2023-02-06\n',
+    '# version: BIGDAWG 2.0\n',
+    '# origin: github.com/mmariani123/bigdawgv2\n',
+    '# repository: github.com/mmariani123/bigdawgv2\n',
+    '# author: Mariani Systems LLC, Michael P. Mariani (m.mariani123@gmail.com)\n'
+  )
+
+  fileConn <- file(outFile)
+  posLine0 <- protHeader
+  posLine1 <-
+    paste(
+      paste('Prot',
+            paste(rep(" ",times=nchar(df$V1)[1]-5),collapse=""),
+            lengths[1],
+            collapse=""),
+      paste(
+        paste(rep(" ",times=abs(lengths[1])-nchar(lengths[1])+1),collapse=""),
+        lengths[3],
+        collapse=""),
+      colapse=""
+    )
+  posLine2 <-
+    paste(
+      paste(
+        paste(rep(" ",times=nchar(df$V1)[1]),collapse=""),
+        "|",
+        collapse=""),
+      paste(
+        paste(rep(" ",times=abs(lengths[1])),collapse=""),
+        "|",
+        collapse=""),
+      collapse=""
+    )
+  #writeLines(paste(lengths,collapse = "\t"), fileConn)
+  writeLines(c(protHeader, posLine1, posLine2),fileConn)
+  close(fileConn)
+  write.table(dfMat,
+              file=outFile,
+              append=TRUE,
+              col.names = FALSE,
+              row.names = FALSE,
+              quote = FALSE,
+              sep=" ")
+}
+
+
 #' make_prot_file
 #'
 #' Function to create the .alnprot.txt files from the
@@ -60,91 +219,15 @@ make_prot_file <- function(filesIn=NULL,
                            pos=29){
   lapply(filesIn,
          FUN = function(x){
-           fullPath <- paste0("./data/",species,"/",x)
-           print(paste0("Processing file ",fullPath))
-           df <- read.table(fullPath,
-                      sep="",
-                      header = FALSE,
-                      stringsAsFactors = FALSE)
-           groupNames   <- df[,1]
-           strings      <- df[,2]
-           protLengths  <- df[,3]
-           uniqProtLengths <- as.numeric(unique(protLengths))
-           groupNamesFinal <- c()
-           print(colnames(df))
-           casted <- aggregate(df, V2 ~ V1, FUN=paste, collapse = "")
-           #print(casted)
-           #stop()
-           dfMat <- data.frame()
-           #for(i in 1:length(uniqProtLengths)){
-           #dfNow <- df[which(df[,3]==uniqProtLengths[i]),]
-              if(allBases==FALSE){
-                for(j in 1:nrow(casted)){
-                  if(j!=1){
-                    #print(dfNow[1,2])
-                    #print(dfNow[j,2])
-                  matchInd <- mapply(function(x, y) which(x == y),
-                                     strsplit(casted[1,2], split=""),
-                                     strsplit(casted[j,2], split=""))
-                    if(length(matchInd[[1]])!=0){
-                      for(k in seq_along(matchInd)){
-                        substring(casted[j,2],
-                                  matchInd[k],
-                                  matchInd[k]) <- "-"
-                      }
-                    }
-
-
-                  }
-                }
-              }
-              #account for leader peptide here:
-              finalLength <- uniqProtLengths + pos
-              repDots <- paste(rep(".",times=pos),collapse="")
-              pepNow <- paste0(repDots,casted[,2])
-              print(pepNow)
-
-              choppedStrings <- array(NA,
-                                      c(nrow=nrow(casted),
-                                      ncol=ceiling((max(uniqProtLengths)+pos)/groupSize),
-                                      groupSize)
-              )
-
-              pepValues <- unlist(
-                strsplit(
-                  gsub(paste0("(.{",groupSize,"})"), "\\1 ",
-                       pepNow,
-                       perl = TRUE),
-                  split=" "),
-              )
-
-              nCol<- 1:ceiling((max(uniqProtLengths)+pos)/groupSize)
-              nRow <- nrow(casted)
-
-              for(i in 1:length(pepValues)){
-                  choppedStrings[ceiling(i/13),i,] <- pepValues[i]
-              }
-
-              dfMat <- choppedStrings
-
-           lengths <- c("Prot",as.integer(-pos),1,unique(df[,3]))
-           outFile <- paste0("./data/",species,"/",x,"prot.txt")
-           fileConn <- file(outFile)
-           writeLines(paste(lengths,collapse = "\t"), fileConn)
-           close(fileConn)
-           write.table(dfMat,
-                       file=outFile,
-                       append=TRUE,
-                       col.names = FALSE,
-                       row.names = FALSE,
-                       quote = FALSE,
-                       sep="\t")
-           #stop()
-        })
-
+           make_prot(x,
+                     groupSize = groupSize,
+                     allBases = allBases,
+                     species = species,
+                     pos = pos)
+         })
 }
 
-#' make_prot_file
+#' make_p_group_file
 #'
 #' Function to create the _nom_p.txt files from the 'alnprot.txt'
 #' files created with 'make_prot_file()'
