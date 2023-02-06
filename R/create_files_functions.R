@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 #' get_files
 #'
 #' functions to download files, used to create alnprot.txt _nom_p.txt files
