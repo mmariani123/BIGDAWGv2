@@ -199,7 +199,6 @@ make_prot <- function(x = fileIn,
               sep=" ")
 }
 
-
 #' make_prot_file
 #'
 #' Function to create the .alnprot.txt files from the
