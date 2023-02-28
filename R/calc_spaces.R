@@ -107,14 +107,15 @@ calc_spaces <- function(x = fileOutNamesProt[3],
     }
   }
   #account for leader peptide here:
-  leaderPad <- plyr::round_any(pos, 10, f=ceiling) - pos
+  leadPadding <- plyr::round_any(pos, 10, f=ceiling)
+  leaderPad <- leadPadding - pos
   repDots <- paste(rep(" ", times=leaderPad), collapse="")
   pepNow <- paste0(repDots, casted[,2])
   #print(pepNow)
 
   choppedStrings <- array(rep("NA", times=10),
                           c(nrow=nrow(casted),
-                            ncol=ceiling((max(uniqProtLengths)+leaderPad)/groupSize),
+                            ncol=ceiling((max(uniqProtLengths)+leadPadding)/groupSize),
                             1)
   )
 
@@ -127,9 +128,16 @@ calc_spaces <- function(x = fileOutNamesProt[3],
       )
     )
 
-  nCol <- ceiling((max(uniqProtLengths)+leaderPad)/groupSize)
+  nCol <- ceiling((max(uniqProtLengths)+leadPadding)/groupSize)
   nRow <- nrow(casted)
+
+  #Don't forget to add the leader values to the pepValues below:
   pepValues <- paste0(pepValues,rep("",nCol*nRow-length(pepValues)))
+  pepValues <- c(
+                paste(rep(' ',
+                      times=plyr::round_any(pos, 10, f=ceiling)),
+                      collapse = ""),
+                  pepValues)
 
   for(i in 1:length(pepValues)){
     choppedStrings[ceiling(i/nCol),ifelse(i%%nCol!=0,i%%nCol,nCol),] <-
