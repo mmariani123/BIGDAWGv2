@@ -33,20 +33,104 @@ get_files <- function(fileUrl,
         )
 }
 
-#' make_prot_file
+# fasta_to_aln
 #'
-#' Function to create the .alnprot.txt files from the
-#' files from the '-protein.aln' files hosted on GitHub
+#' Function to create a .aln file from a .fasta e.g. using
+#' https://github.com/ANHIG/IMGTHLA/blob/Latest/fasta/DRB1_prot.fasta
+#' as input.
 #' @param fileIn Input file paths
-#' @param groupSize the size of the chunks of amino acid strings
-#' the default is 10, and they are output as tab-separated columns
-#' the output files(s)
-#' @param allBases if set to FALSE, then only mismatched bases
-#' will be included and the remainder will be set to '-' .
+#' @param appendName Boolean, append the 1st and 2nd allele names
+#' Otherwise it will just use the 2nd column as the output name
 #' @param species human: hla , dog: dla, cow: bla, chicken: cla
-#' @param pos the offset position to account for leader peptides for
-#' the gene being anaylyzed.
 #' @note This function is for general use
+#' @examples
+#' \dontrun{
+#' # The following is an example:
+#'}
+fasta_to_aln <- function(fileIn='',
+                         appendName=FALSE,
+                         species='hla'){
+  fullPath <- paste0("./data/",species,"/",fileIn)
+  print(paste0("Converting .fasta file ",
+               fullPath,
+               ' to .aln file'))
+  conn = file(fullPath, "r")
+  fileOut <- gsub(".fasta$",".aln",fileIn,perl=TRUE)
+  fullOut <- paste0("./data/",species,"/",fileOut)
+  if(exists(fullOut)){
+    unlink(fullOut)
+  }
+  connOut = file(fullOut, 'a')
+  #Check number of lines in file (doesnt include final blank line):
+  numLines <- sapply(fullPath,R.utils::countLines)
+  head1Check <- TRUE
+  seqList <- list()
+  headerLine <- TRUE
+  i <- 1
+  while(TRUE){
+    lineIn = readLines(conn, n = 1)
+    if(length(lineIn) == 0){
+      break
+    }else if(i==numLines[[1]]){
+      lineOut <- paste(
+        headerLine[,2],
+        paste(seqList, collapse=''),
+        headerLine[,3],
+        collapse = "\t")
+      writeLines(lineOut,
+                 con = connOut)
+      seqList <- list()
+      break
+    }else if(grepl("^>", lineIn, perl=TRUE) & i==1){
+      headerLineFirst <- paste(
+        unlist(strsplit(lineIn,split=' +'))[2:3],
+        collapse = "\t")
+        next
+    }else if(grepl("^>", lineIn, perl=TRUE) & i!=1){
+      if(head1Check <- TRUE){
+        lineOut1 <- paste(
+          headerLineFirst[2],
+          paste(seqList[[1]], collapse=''),
+          headerLineFirst[3],
+          collapse = "\t")
+        headerLine <- paste(
+          unlist(strsplit(lineIn,split=' +'))[2:3],
+          collapse = "\t")
+        lineOut2 <- paste(
+          headerLine[,2],
+          paste(seqList[2:length(seqList)], collapse=''),
+          headerLine[,3],
+          collapse = "\t")
+        writeLines(lineOut1, con=connOut)
+        writelines(lineOut2, con=connOut)
+        seqList <- list()
+        next
+      }else{
+        headerLine <- paste(
+          unlist(strsplit(lineIn,split=' +'))[2:3],
+          collapse = "\t")
+        lineOut <- paste(
+          headerLine[,2],
+          paste(seqList, collapse=''),
+          headerLine[,3],
+          collapse = "\t")
+        seqList <- list()
+      next
+      }
+    }else if(length(seqList==0)){
+      seqList <- rlist::list.append(seqList,lineIn)
+      next
+    }else{
+      stop(paste0('Error: there is an indexing error
+                  outputing the .aln file'))
+    }
+    print(lineIn)
+    i <- i+1
+  }
+  close(conn)
+}
+
+
 #' calc_spaces
 #'
 #' This function is for positioning the pos markers and '|' indicators
