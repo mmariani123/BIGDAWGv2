@@ -525,35 +525,6 @@ make_prot_file <- function(x = fileOutNamesProt[3],
   }
 }
 
-#' make_prot_files
-#'
-#' Function to create the .alnprot.txt files from the
-#' files from the '-protein.aln' files hosted on GitHub
-#' @param filesIn list of full file paths
-#' @param groupSize the size of the chunks of amino acid strings
-#' the default is 10, and they are output as tab-separated columns
-#' the output files(s)
-#' @param allBases if set to FALSE, then only mismatched bases
-#' will be included and the remainder will be set to '-' .
-#' @param species human: hla , dog: dla, cow: bla, chicken: cla
-#' @param pos the offset position to account for leader peptides for
-#' the gene being anaylyzed.
-#' @note This function is for general use
-make_prot_files <- function(filesIn=NULL,
-                           groupSize=10,
-                           allBases=TRUE,
-                           species='hla',
-                           pos=29){
-  lapply(filesIn,
-         FUN = function(x){
-           make_prot(x,
-                     groupSize = groupSize,
-                     allBases = allBases,
-                     species = species,
-                     pos = pos)
-         })
-}
-
 #' make_p_group_file
 #'
 #' Function to create the _nom_p.txt files from the 'alnprot.txt'
