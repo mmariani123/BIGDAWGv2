@@ -205,6 +205,8 @@ fasta_to_aln_2 <- function(fileIn='',
 #' third column in the download -protein align files.
 #' @param ncharName the length in characters of the allele nanmes
 #' corresponding to the first field in the downloaded -protein.aln files
+#' @param protHeader First header lines of the output file fiven as a single
+#' string with '\n' to denote newlines.
 #' @note This function is for general use
 #' @examples
 #' \dontrun{
@@ -243,9 +245,10 @@ make_prot_file <- function(x = fileOutNamesProt[3],
                         groupSize = 10,
                         allBases = FALSE,
                         species = "dla",
-                        pos=29,
+                        pos=23,
                         lengths,
-                        nCharName){
+                        nCharName,
+                        protHeader=""){
 
   library(data.table)
   library(dplyr)
@@ -310,8 +313,8 @@ make_prot_file <- function(x = fileOutNamesProt[3],
   #account for leader peptide here:
   leadPadding <- plyr::round_any(pos, 10, f=ceiling)
   leaderPad <- leadPadding - pos
-  repDots <- paste(rep(" ", times=leaderPad), collapse="")
-  pepNow <- paste0(repDots, casted[,2])
+  repLeadSpace <- paste(rep(" ", times=leaderPad), collapse="")
+  pepNow <- paste0(repLeadSpace, casted[,2])
   #print(pepNow)
 
   choppedStrings <- array(rep("NA", times=10),
@@ -320,7 +323,7 @@ make_prot_file <- function(x = fileOutNamesProt[3],
                             1)
   )
 
-  pepValues <-
+  pepVals <-
     unlist(
       strsplit(
         pepNow,
@@ -333,12 +336,13 @@ make_prot_file <- function(x = fileOutNamesProt[3],
   nRow <- nrow(casted)
 
   #Don't forget to add the leader values to the pepValues below:
-  pepValues <- paste0(pepValues,rep("",nCol*nRow-length(pepValues)))
-  pepValues <- c(
-    paste(rep(' ',
-              times=leaderPad,
-              collapse = "")),
-    pepValues)
+  #pepValues <- paste0(pepValues,rep("",nCol*nRow-length(pepValues)))
+  pepValues <- paste0(pepVals,rep("",nCol*nRow))
+  #pepValues <- c(
+  #  paste(rep(' ',
+  #            times=leaderPad,
+  #            collapse = "")),
+  #  pepVals2)
 
   for(i in 1:length(pepValues)){
     choppedStrings[ceiling(i/nCol),ifelse(i%%nCol!=0,i%%nCol,nCol),] <-
@@ -357,7 +361,7 @@ make_prot_file <- function(x = fileOutNamesProt[3],
 
   #lengths <- c(as.integer(-pos)-leaderPad, as.integer(-pos), 1, unique(df[,3]))
   #lengths <- c(as.integer(-pos)-leaderPad, 1, unique(df[,3]))
-  lengths = posVec
+  #lengths = posVec
 
   outFile <- paste0("./data/",species,"/",x,"prot.txt")
 
@@ -373,17 +377,6 @@ make_prot_file <- function(x = fileOutNamesProt[3],
     unlink(outFile)
   }
 
-  #Create file header (first lines)
-  protHeader <- paste0(
-    '# file: ',outFile,'\n',
-    '# date: ','2023-02-06\n',
-    '# version: BIGDAWG 2.0\n',
-    '# origin: github.com/mmariani123/bigdawgv2\n',
-    '# repository: github.com/mmariani123/bigdawgv2\n',
-    '# author: Mariani Systems LLC, Michael P. Mariani ',
-    '(m.mariani123@gmail.com)\n'
-  )
-
   #Create output file and add header:
   fileConn <- file(outFile)
   writeLines(protHeader, fileConn)
@@ -392,7 +385,8 @@ make_prot_file <- function(x = fileOutNamesProt[3],
   setsList <- list()
   negStart <- lengths[1]
   #for(i in seq_along(1:ceiling(nCol/10))){
-  for(i in seq_along(1:ceiling(max(lengths)/100))){
+  iterNums <- seq_along(1:ceiling(max(lengths)/100))
+  for(i in iterNums){
     fileConn <- file(outFile,open="a")
     print(paste0('current iter is: ',as.character(i)))
     lengthsNow <-
@@ -421,9 +415,9 @@ make_prot_file <- function(x = fileOutNamesProt[3],
                 collapse="")
 
         vertLine[[j]] <-
-          paste('prot',
+          paste(
                 paste(rep(" ",
-                          times=nCharName-nchar('prot')-1),
+                          times=nCharName-nchar('prot')+4),
                       collapse=""),
                 '|',
                 collapse="")
@@ -449,12 +443,23 @@ make_prot_file <- function(x = fileOutNamesProt[3],
       }
       else if(i!=1 & j==1){
         #remaining from last line:
+        browser()
+        #prevLineRemaining <- ((i-1)*100 - ((max(unlist(setsList[[i-1]])) + abs(negStart))) + ifelse(j==1,2,0))
+        prevLineRemaining <- ((i-1)*100 - ((max(unlist(setsList[[i-1]])) + abs(negStart))))
+        #Subtract the inter column spaces from the previous line
+        #prevLineRemaining <-
+        #  prevLineRemaining +
+        #  ifelse(prevLineRemaining>10,ceiling(prevLineRemaining/10)-1,0)
+        #Calculate inter sequence length distance:
         interDist <-
           setsList[[i]][1] -
-          lengths[length(unlist(setsList[1:i-1]))] -
-          ((i-1)*100 - (lengths[length(unlist(setsList[1:i-1]))] + abs(negStart))) +
-          #0
-          -3
+          (max(unlist(setsList[[i-1]])))
+        finalDist <-
+          interDist -
+          prevLineRemaining +
+          ((nCharName+1) - nchar('prot')) -
+          2
+          ##-3
         #(nchar('prot')-1) -
         #6
         #(nCharName)
@@ -467,40 +472,54 @@ make_prot_file <- function(x = fileOutNamesProt[3],
         #nchar(lengths[length(unlist(setsList[1:i-1]))]) #+
         #(nCharName - nchar('prot')-1)
         print(paste0('interDist = ',as.character(interDist)))
-        #Calculate the between column spaces becasue each column is grouped
+        #Calculate the between column spaces because each column is grouped
         #into 10 AA currently
-        bcs <- ceiling((((setsList[[i]][1] -
-                            lengths[length(unlist(setsList[1:i-1]))]) -
-                           ((i-1)*100 - (lengths[length(unlist(setsList[1:i-1]))] + abs(negStart)))
-        )/10))
+        #bcs <- ceiling((((setsList[[i]][1] -
+        #                    lengths[length(unlist(setsList[1:i-1]))]) -
+        #                   ((i-1)*100 - (lengths[length(unlist(setsList[1:i-1]))] + abs(negStart)))
+        #)/10))
+        bcs <- ifelse(abs(finalDist>10),ceiling(abs(finalDist)/10)-1,0)
         print(paste0('between column spaces = ',as.character(bcs)))
 
         posLine[[j]] <- paste('prot',
-                              paste(rep(" ",times=interDist+bcs),collapse=""),
+                              paste(rep(" ",times=finalDist+bcs),collapse=""),
                               setsList[[i]][1],collapse="")
 
-        vertLine[[j]] <- paste('prot',
-                               paste(rep(" ",times=interDist+bcs),collapse=""),
+        vertLine[[j]] <- paste(
+                               paste(rep(" ",times=finalDist+bcs+5),collapse=""),
                                '|',collapse="")
 
       }else{
-        interDist <- setsList[[i]][j] -
-          setsList[[i]][j-1] -
-          7
-        #nchar(setsList[[i]][j-1])
-        print(paste0('interDist = ',as.character(interDist)))
-        #Calculate the between column spaces becasue each column is grouped
-        #into 10 AA currently
-        bcs <- ceiling((abs(setsList[[i]][j] - setsList[[i]][j-1] + abs(negStart))/10))
-        print(paste0('between column spaces = ',as.character(bcs)))
+        if(i==max(iterNums)){
+          print(paste0('Assigning final index position at ',
+                       as.character(max(lengths))))
+          interDist <-
+            max(lengths) -
+            setsList[[i]][j-1] -
+            nchar(setsList[[i]][j-1]) -
+            1
+        }else{
+          interDist <-
+            setsList[[i]][j] -
+            setsList[[i]][j-1] -
+            nchar(setsList[[i]][j-1]) -
+            1
+        }
 
-        posLine[[j]] <- paste(
-          paste(rep(" ",times=interDist+bcs),collapse=""),
-          setsList[[i]][j],collapse="")
+          print(paste0('interDist = ',as.character(interDist)))
+          #Calculate the between column spaces becasue each column is grouped
+          #into 10 AA currently
+          #bcs <- ceiling((abs(setsList[[i]][j] - setsList[[i]][j-1] + abs(negStart))/10))
+          bcs <- ifelse(i==max(iterNums),ceiling(abs(interDist)/10)-2,ceiling(abs(interDist)/10))
+          print(paste0('between column spaces = ',as.character(bcs)))
 
-        vertLine[[j]] <- paste(
-          paste(rep(" ",times=interDist+bcs+2),collapse=""),
-          '|',collapse="")
+          posLine[[j]] <- paste(
+            paste(rep(" ",times=interDist+bcs),collapse=""),
+            setsList[[i]][j],collapse="")
+
+          vertLine[[j]] <- paste(
+            paste(rep(" ",times=interDist+bcs+2),collapse=""),
+            '|',collapse="")
 
       }
     }
