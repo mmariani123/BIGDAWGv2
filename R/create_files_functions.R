@@ -196,11 +196,11 @@ fasta_to_aln_2 <- function(fileIn='',
 #'
 #' This function is for positioning the pos markers and '|' indicators
 #' in the _nom_p.txt files
-#' @param x
-#' @param groupSize
-#' @param allBases
-#' @param species
-#' @param pos
+#' @param fileIn The full input file path
+#' @param groupSize The number of AA's in each column
+#' @param allBases Show all bases or just mutations
+#' @param species Specify the species; e.g., human, dog, chicken, cow
+#' @param pos The offset position (length) of the leader peptide
 #' @param lengths The length of the AA sequences corresponding to the
 #' third column in the download -protein align files.
 #' @param ncharName the length in characters of the allele nanmes
@@ -241,7 +241,7 @@ fasta_to_aln_2 <- function(fileIn='',
 #'            nCharName = 13)
 #'}
 
-make_prot_file <- function(x = fileOutNamesProt[3],
+make_prot_file <- function(fileIn = fileOutNamesProt[3],
                         groupSize = 10,
                         allBases = FALSE,
                         species = "dla",
@@ -250,20 +250,18 @@ make_prot_file <- function(x = fileOutNamesProt[3],
                         nCharName,
                         protHeader=""){
 
-  library(data.table)
-  library(dplyr)
-  library(magrittr)
-  library(plyr)
-  library(abind)
+  #library(data.table)
+  #library(dplyr)
+  #library(magrittr)
+  #library(plyr)
+  #library(abind)
 
-  #outFile <- "C:\\Users\\mmari\\OneDrive\\Desktop\\testOut.txt"
-  #if(file.exists(outFile)){
-  #  unlink(outFile)
+  #fileOut <- "C:\\Users\\mmari\\OneDrive\\Desktop\\testOut.txt"
+  #if(file.exists(fileOut)){
+  #  unlink(fileOut)
   #}
 
-  fullPath <- paste0("./data/",species,"/",x)
-  print(paste0("Processing file ",fullPath))
-  df <- read.table(fullPath,
+  df <- read.table(fileIn,
                    sep="",
                    header = FALSE,
                    stringsAsFactors = FALSE)
@@ -363,22 +361,22 @@ make_prot_file <- function(x = fileOutNamesProt[3],
   #lengths <- c(as.integer(-pos)-leaderPad, 1, unique(df[,3]))
   #lengths = posVec
 
-  outFile <- paste0("./data/",species,"/",x,"prot.txt")
+  fileOut <-
+    paste0("./inst/extdata/",
+           species,"/",
+           paste0(gsub(".*/|-protein.aln$","",fileIn),
+                  sep="_nom_p.txt"))
 
   #Check if file exists, if it does erase it:
-  if(file.exists(outFile)){
-    unlink(outFile)
+  if(file.exists(fileOut)){
+    unlink(fileOut)
   }
 
   dfMat1 <- dfMat[,1,1]
   dfMat2 <- dfMat[,-1,1]
 
-  if(file.exists(outFile)){
-    unlink(outFile)
-  }
-
   #Create output file and add header:
-  fileConn <- file(outFile)
+  fileConn <- file(fileOut)
   writeLines(protHeader, fileConn)
   close(fileConn)
 
@@ -387,7 +385,7 @@ make_prot_file <- function(x = fileOutNamesProt[3],
   #for(i in seq_along(1:ceiling(nCol/10))){
   iterNums <- seq_along(1:ceiling(max(lengths)/100))
   for(i in iterNums){
-    fileConn <- file(outFile,open="a")
+    fileConn <- file(fileOut, open="a")
     print(paste0('current iter is: ',as.character(i)))
     lengthsNow <-
       lengths[
@@ -531,14 +529,14 @@ make_prot_file <- function(x = fileOutNamesProt[3],
     write.table(
       cbind(dfMat1,
             dfMat2[,c((i*10-9):(ifelse(i*10>nCol,nCol,i*10)))]),
-      file=outFile,
+      file=fileOut,
       append=TRUE,
       col.names = FALSE,
       row.names = FALSE,
       quote = FALSE,
       sep=" ")
 
-    fileConn <- file(outFile, open='a')
+    fileConn <- file(fileOut, open='a')
     writeLines('',fileConn)
     close(fileConn)
   }
@@ -590,101 +588,4 @@ make_p_group_file <- function(filesInP,
            }
            sink()
          })
-}
-
-#' make_prot_file
-#'
-#' Function to create the _nom_p.txt files from the 'alnprot.txt'
-#' files created with 'make_prot_file()'
-#' @param x x param
-#' @param groupSize groupSize param
-#' @param allBases allBases param
-#' @param species species param
-#' @param pos pos param
-#' make_prot_file(),
-#' @note This function is for general use
-make_prot <- function(x = fileOutNamesProt[1],
-                      groupSize = 10,
-                      allBases = FALSE,
-                      species = "dla",
-                      pos=29){
-  fullPath <- paste0("./data/",species,"/",x)
-  print(paste0("Processing file ",fullPath))
-  df <- read.table(fullPath,
-                   sep="",
-                   header = FALSE,
-                   stringsAsFactors = FALSE)
-  groupNames   <- df[,1]
-  strings      <- df[,2]
-  protLengths  <- df[,3]
-  uniqProtLengths <- as.numeric(unique(protLengths))
-  groupNamesFinal <- c()
-  print(colnames(df))
-  casted <- aggregate(df, V2 ~ V1, FUN=paste, collapse = "")
-  #print(casted)
-  #stop()
-  dfMat <- data.frame()
-  #for(i in 1:length(uniqProtLengths)){
-  #dfNow <- df[which(df[,3]==uniqProtLengths[i]),]
-  if(allBases==FALSE){
-    for(j in 1:nrow(casted)){
-      if(j!=1){
-        #print(dfNow[1,2])
-        #print(dfNow[j,2])
-        matchInd <- mapply(function(x, y) which(x == y),
-                           strsplit(casted[1,2], split=""),
-                           strsplit(casted[j,2], split=""))
-        if(length(matchInd[[1]])!=0){
-          for(k in seq_along(matchInd)){
-            substring(casted[j,2],
-                      matchInd[k],
-                      matchInd[k]) <- "-"
-          }
-        }
-      }
-    }
-  }
-  #account for leader peptide here:
-  finalLength <- uniqProtLengths + pos
-  repDots <- paste(rep(".",times=pos),collapse="")
-  pepNow <- paste0(repDots,casted[,2])
-  print(pepNow)
-
-  choppedStrings <- array(rep("NA",times=10),
-                          c(nrow=nrow(casted),
-                            ncol=ceiling((max(uniqProtLengths)+pos)/groupSize),
-                            1)
-  )
-
-  pepValues <- unlist(
-    strsplit(
-      gsub(paste0("(.{",groupSize,"})"), "\\1 ",
-           pepNow,
-           perl = TRUE),
-      split=" "),
-  )
-
-  nCol<- ceiling((max(uniqProtLengths)+pos)/groupSize)
-  nRow <- nrow(casted)
-
-  for(i in 1:length(pepValues)){
-    choppedStrings[ceiling(i/nCol),ifelse(i%%nCol!=0,i%%nCol,nCol),] <- pepValues[i]
-    print(i)
-  }
-
-  dfMat <- choppedStrings
-
-  lengths <- c("Prot",as.integer(-pos),1,unique(df[,3]))
-  outFile <- paste0("./data/",species,"/",x,"prot.txt")
-  fileConn <- file(outFile)
-  writeLines(paste(lengths,collapse = "\t"), fileConn)
-  close(fileConn)
-  write.table(dfMat,
-              file=outFile,
-              append=TRUE,
-              col.names = FALSE,
-              row.names = FALSE,
-              quote = FALSE,
-              sep="\t")
-  #stop()
 }
