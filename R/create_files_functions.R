@@ -241,7 +241,7 @@ fasta_to_aln_2 <- function(fileIn='',
 #'            nCharName = 13)
 #'}
 
-make_prot_file <- function(fileIn = fileOutNamesProt[3],
+make_prot_file <- function(fileIn = "",
                         groupSize = 10,
                         allBases = FALSE,
                         species = "dla",
@@ -365,7 +365,7 @@ make_prot_file <- function(fileIn = fileOutNamesProt[3],
     paste0("./inst/extdata/",
            species,"/",
            paste0(gsub(".*/|-protein.aln$","",fileIn),
-                  sep="_nom_p.txt"))
+                  sep="_prot.txt"))
 
   #Check if file exists, if it does erase it:
   if(file.exists(fileOut)){
@@ -546,29 +546,32 @@ make_prot_file <- function(fileIn = fileOutNamesProt[3],
 #'
 #' Function to create the _nom_p.txt files from the 'alnprot.txt'
 #' files created with 'make_prot_file()'
-#' @param filesInP These are the protein files created with
+#' @param fileInP These are the protein files created with
 #' @param species human: hla , dog: dla, cow: bla, chicken: cla
 #' make_prot_file(),
 #' @note This function is for general use
-make_p_group_file <- function(filesInP,
+make_p_group_file <- function(fileInP,
                               species='hla'){
-  dfs <- lapply(filesInP,
-         FUN=function(x){
-           print(x)
-           dfIn <- readLines(paste0("./data/",species,"/",x))
+           print(fileInP)
+           dfIn <- readLines(system.file(
+             paste0("extdata/",species,"/",fileInP),
+             package = "BIGDAWGv2"))
            comments  <- dfIn[which(grepl(pattern = "^#", dfIn))]
            protHead  <- dfIn[which(grepl(pattern = "^Prot", dfIn))]
            sequences <- dfIn[which(!grepl(pattern = "^Prot|^#", dfIn))]
-           allSeqs   <- unlist(strsplit(sequences, split="\t"))
+           allSeqs   <- unlist(strsplit(sequences, split=" "))
            pGroups   <- allSeqs[which(grepl(pattern="\\*", allSeqs))]
            pGroupsSplit  <- strsplit(pGroups, split="\\*|:")
            pGroupsSplit2 <- sapply(pGroupsSplit, "[[", 2)
            pGroupsSplit3 <- sapply(pGroupsSplit, "[[", 3)
            pGroupsSplit4 <- paste(pGroupsSplit2, pGroupsSplit3, sep=":")
            pIds <- pGroupsSplit4 %>% unique()
+
+           #pIds <- gsub(" .*","",pIds)
+
            #print(length(pIds))
            geneTmp <- gsub("(.*)\\*.*","\\1", pGroups[1], perl=TRUE)
-           fileOutP <- paste0("./data/",species,"/",x,"_nom_p.txt")
+           fileOutP <- paste0("./inst/extdata/",species,"/",fileInP,"_nom_p.txt")
            if(file.exists(fileOutP)){
              print(paste0(fileOutP, "aleady exists, removing ..."))
              file.remove(fileOutP)
@@ -587,5 +590,4 @@ make_p_group_file <- function(filesInP,
             writeLines(outGroups)
            }
            sink()
-         })
 }

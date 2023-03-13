@@ -188,6 +188,14 @@ BIGDAWGv2 <- function(Data,
 
   else{Run <- Run.Tests}
 
+  ##Here MM I need to add a switch because if it's not human
+  ##We need to run the appropriate AA test
+  #############################################################
+  #############################################################
+  #############################################################
+  #############################################################
+  #############################################################
+
   if(!HLA){
     if("A" %in% Run){
       cat("Not HLA data. Skipping Amino Acid Analysis.\n")
@@ -202,7 +210,12 @@ BIGDAWGv2 <- function(Data,
     stop("Analysis Stopped.",call. = F)
   }
 
-  # MISSING DATA
+  ###################### MISSING DATA ##############################
+  ##################################################################
+  ##################################################################
+  ##################################################################
+  ##################################################################
+
   if(Missing == "ignore") {
     cat("Ignoring any missing data.\n")
     Err.Log(Output,"Ignore.Missing")
@@ -248,7 +261,15 @@ BIGDAWGv2 <- function(Data,
     if(ncol(Tab)>52){Err.Log(Output,"AllPairwise.Merge")}
   }
 
-  ##### HLA specific checks
+  ##### HLA specific checks######################################
+  ###############################################################
+  ###############################################################
+  ###############################################################
+  ###############################################################
+
+  #THe position list will have to be specific to the species
+  #ie Update ptn list
+  #and the position list has to do with the core exons
 
   #Check for the updated ExonPtnList 'UpdatePtnList' and
   #use if found.
@@ -273,6 +294,12 @@ BIGDAWGv2 <- function(Data,
   }else{
      DRB345.test <- length(grep("DRB345",colnames(Tab)))>0
   }
+
+  ############################################################
+  ############################################################
+  ############################################################
+  ############################################################
+  ############################################################
 
   if(HLA){
 
@@ -444,6 +471,12 @@ BIGDAWGv2 <- function(Data,
     } # End A if statement
 
   } # End HLA if statement and HLA specific functionalities
+
+  ############################################################
+  ############################################################
+  ############################################################
+  ############################################################
+  ############################################################
 
   # LOCI SET COLUMN DEFINITIONS
   # This section MUST follow DRB345 processing (above) on the chance that DRB345 is formatted as single column
