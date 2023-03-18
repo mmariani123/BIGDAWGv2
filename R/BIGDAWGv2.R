@@ -37,7 +37,7 @@
 #' }
 BIGDAWGv2 <- function(Data,
          HLA=TRUE,
-         species='hla',
+         Species='hla',
          Run.Tests,
          Loci.Set,
          Exon,
@@ -57,12 +57,13 @@ BIGDAWGv2 <- function(Data,
   options(warn=-1)
 
   MainDir <- getwd()
+
   on.exit(setwd(MainDir), add = TRUE)
 
   # CHECK PARAMETERS
   if(missing(Data)){
     Err.Log("P.Missing","Data") ;
-    stop("Analysis Stopped.",call.=FALSE)
+    stop("Analysis Stopped. Missing Data",call.=FALSE)
   }
 
   HLA <- as.logical(HLA)
@@ -173,12 +174,15 @@ BIGDAWGv2 <- function(Data,
   }
   if(Output){setwd(OutDir)}
 
-# ===================================================================================================================================== ####
-# Data Processing and Sanity Checks ___________________________________________________________________________________________________ ####
+###########################################################
+#### ================================================= ####
+#### _____ Data Processing and Sanity Checks _________ ####
+#### ================================================= ####
+###########################################################
 
   cat(">>>> DATA PROCESSING AND CHECKS.\n")
 
-  #### General processing and checks for all data
+#### General processing and checks for all data
 
   # Define Data Columns
   Data.Col <- seq(3,ncol(Tab))
@@ -194,13 +198,13 @@ BIGDAWGv2 <- function(Data,
 
   }
 
-  ##MM: Here I need to add a switch because if it's not human
-  ##We need to run the appropriate AA test
-  #############################################################
-  #############################################################
-  #############################################################
-  #############################################################
-  #############################################################
+##MM: Here I need to add a switch because if it's not human
+##We need to run the appropriate AA test
+#############################################################
+#############################################################
+#############################################################
+#############################################################
+#############################################################
 
   #if(HLA){
 
@@ -224,56 +228,18 @@ BIGDAWGv2 <- function(Data,
   }
 
 ############## BAD DATA DEFINITIONS - No 1's or 0's######
-#########################################################
-#########################################################
-#########################################################
-#########################################################
 
-if(length(which(Tab[,Data.Col]==0))>0 ||
-  length(which(Tab[,Data.Col]==0))>1){
-  Err.Log(Output,"Bad.Data")
-  stop("Analysis Stopped, Bad Data Definitions", call. = F)
-}
+BIGDAWGv2::bad_data_def(Tab=Tab,
+                        Data.Col=Data.Col,
+                        Output=Output)
 
 ###################### MISSING DATA ##############################
-##################################################################
-##################################################################
-##################################################################
-##################################################################
 
-if(Missing == "ignore"){
-  cat("Ignoring any missing data...\n")
-  Err.Log(Output,"Ignore.Missing")
-  rows.rm <- NULL
-}else{
-  if(Missing > 2){
-    if("H" %in% Run){Err.Log(Output,"Big.Missing")}
-  }
-  cat(paste0("Removing any missing data.",
-  " This will affect Hardy-Weinberg Equilibrium test.\n"))
-  geno.desc <- summaryGeno.2(Tab[,Data.Col], miss.val=NAstrings)
-  test <- geno.desc[,2] + 2*geno.desc[,3]
-  rows.rm <- which(test > Missing)
-  if(length(rows.rm) > 0){
-    rows.rm <- which(test > Missing)
-    ID.rm <- Tab[rows.rm,1]
-    Tab <- Tab[-rows.rm,]
-    if(Output){write.table(ID.rm,
-                           file="Removed_SampleIDs.txt",
-                           sep="\t",
-                           row.names=F,
-                           col.names=F,
-                           quote=F)
-    }
-    rm(ID.rm)
-  }
-  rm(geno.desc,test)
-  if(nrow(Tab)==0){
-    Err.Log(Output,"TooMany.Missing")
-    stop("Analysis Stopped, too many missing data points",
-      call. = F)
-  }
-}
+BIGDAWGv2::missing_data_check(Missing=Missing,
+                              Output=Output,
+                              Tab=Tab,
+                              Data.Col=Data.Col,
+                              NAstrings=NAstrings)
 
 ######### MULTIPLE SETS AND ANALYSIS DUPLICATION ###########
 ############################################################
@@ -281,12 +247,10 @@ if(Missing == "ignore"){
 ############################################################
 ############################################################
 
-if(!missing(Loci.Set)){
-  if(length(Loci.Set)>1 &&
-      (All.Pairwise | "L" %in% Run | "A" %in% Run)){
-    Err.Log(Output,"MultipleSets")
-  }
-}
+BIGDAWGv2::mult_set_dup_check(Loci.Set,
+                              All.Pairwise,
+                              Run,
+                              Output)
 
 ############ DATA MERGE AND NUMBER OF LOCI ###############
 ##########################################################
@@ -294,9 +258,10 @@ if(!missing(Loci.Set)){
 ##########################################################
 ##########################################################
 
-if(Output && Merge.Output && All.Pairwise){
-  if(ncol(Tab)>52){Err.Log(Output,"AllPairwise.Merge")}
-}
+BIGDAWGv2::data_merge_num_loci_check(Output,
+                                     Merge.Output,
+                                     All.Pairwise,
+                                     Tab)
 
 ##### HLA specific checks######################################
 ###############################################################
