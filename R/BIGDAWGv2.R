@@ -60,14 +60,14 @@ BIGDAWGv2 <- function(Data,
 
   on.exit(setwd(MainDir), add = TRUE)
 
-  ################## Check if data spresent: #############
+  ################## Check if data present: #############
 
   if(missing(Data)){
     Err.Log("P.Missing","Data") ;
     stop("Analysis Stopped. Missing Data",call.=FALSE)
   }
 
-################ Check Parameters #####################
+  ################ Check Parameters #####################
 
   HLA <- as.logical(HLA)
 
@@ -225,7 +225,7 @@ BIGDAWGv2 <- function(Data,
   }
 
   if("A" %in% Run){
-    if(species=='hla'){
+    if(Species=='hla'){
 
     }else if(Species=='dla'){
 
@@ -250,11 +250,12 @@ BIGDAWGv2::bad_data_def(Tab=Tab,
 
 ###################### MISSING DATA ##############################
 
-BIGDAWGv2::missing_data_check(Missing=Missing,
-                              Output=Output,
-                              Tab=Tab,
-                              Data.Col=Data.Col,
-                              NAstrings=NAstrings)
+rows.rm <- BIGDAWGv2::missing_data_check(Missing=Missing,
+                                         Run=Run,
+                                         Output=Output,
+                                         Tab=Tab,
+                                         Data.Col=Data.Col,
+                                         NAstrings=NAstrings)
 
 ######### MULTIPLE SETS AND ANALYSIS DUPLICATION ###########
 ############################################################
@@ -322,7 +323,16 @@ if(Species=='hla'){
 
 if(HLA){
 
-  run_hla_checks()
+  runHlaCheckOutput <- run_hla_checks(Trim=Trim,
+                            EVS.rm=EVS.rm,
+                            Run=Run,
+                            DRB345.test=DRB345.test,
+                            Output=Output,
+                            Cores=Cores,
+                            Res=Res)
+
+  Set <- runHlaCheckOutput[[1]]
+  Release <- runHlaCheckOutput[[2]]
 
 }
 

@@ -174,7 +174,7 @@ fasta_to_aln_2 <- function(fileIn='',
           paste(seqList[2:length(seqList)], collapse=''),
           headerLine[2],
           collapse = "\t")
-        writeLines(lineOut1, con=connOut)
+        writeLines(headerLine, con=connOut)
         writeLines(lineOut2, con=connOut)
         head1Check <- FALSE
         seqList <- list()
@@ -271,7 +271,7 @@ make_prot_file <- function(fileIn = "",
   uniqProtLengths <- as.numeric(unique(protLengths))
   groupNamesFinal <- c()
   #print(colnames(df))
-  casted <- aggregate(df, V2 ~ V1, FUN=paste, collapse = "")
+  casted <- stats::aggregate(df, V2 ~ V1, FUN=paste, collapse = "")
 
   if(length(unique(nchar(casted$V2)))!=1){
     dupEntries <- which(unique(nchar(casted$V2)!=max(uniqProtLengths)))

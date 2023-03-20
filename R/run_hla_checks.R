@@ -5,7 +5,13 @@
 #' Check format and quality of the HLA data
 #' @param Loci HLA Loci to be fetched. Limited Loci available.
 #' @note This function is for internal BIGDAWG use only.
-run_hla_checks <- function(){
+run_hla_checks <- function(Trim,
+                           EVS.rm,
+                           Run,
+                           DRB345.test,
+                           Output,
+                           Cores,
+                           Res){
 
   if(Trim | EVS.rm | "A" %in% Run | DRB345.test){
     cat("Running HLA specific check functions...\n")
@@ -204,5 +210,7 @@ run_hla_checks <- function(){
       stop("Analysis Stopped. PhantomSets error ...",
            call. = F) }
   }
+
+  return(list(Set,Release))
 
 }

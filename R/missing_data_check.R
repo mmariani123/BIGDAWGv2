@@ -2,14 +2,16 @@
 
 #' missing_data_check
 #'
-#' Check for missing dataV
+#' Check for missing data and return missing rows
 #' @param Missing Numeric setting allowable missing data for running analysis (may use "ignore").
+#' @param Run Vector of tests to be run
 #' @param Output Logical Should analysis results be written to output directory.
 #' @param Tab The dataset read in as a table
 #' @param Data.Col The data column names
 #' @param NAStrings Vector of various character strings defining NA values
 #' @note This function is for internal use only.
 missing_data_check <- function(Missing,
+                               Run,
                                Output,
                                Tab,
                                Data.Col,
@@ -47,4 +49,5 @@ missing_data_check <- function(Missing,
           call. = F)
     }
   }
+  return(rows.rm)
 }

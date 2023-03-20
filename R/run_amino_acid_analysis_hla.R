@@ -1,4 +1,4 @@
-#' run_amino_acid_analysis
+#' run_amino_acid_analysis_hla
 #'
 #' Function to run the amino acid analysis
 #' @param UPL.flag UPL.flag parameter
@@ -25,26 +25,26 @@
 # ======================================================================== ####
 # Amino Acid Level 'A' ___________________________________________________ ####
 
-run_amino_acid_analysis <- function(UPL.flag,
-                                    nloci,
-                                    All.Pairwise,
-                                    SID,
-                                    Tabsub,
-                                    loci,
-                                    loci.ColNames,
-                                    genos,
-                                    grp,
-                                    Exon,
-                                    EPL,
-                                    Cores,
-                                    Strict.Bin,
-                                    Output,
-                                    Verbose,
-                                    Release,
-                                    SetName,
-                                    SAFE,
-                                    BD.out
-                                    ){
+run_amino_acid_analysis_hla <- function(UPL.flag,
+                                        nloci,
+                                        All.Pairwise,
+                                        SID,
+                                        Tabsub,
+                                        loci,
+                                        loci.ColNames,
+                                        genos,
+                                        grp,
+                                        Exon,
+                                        EPL,
+                                        Cores,
+                                        Strict.Bin,
+                                        Output,
+                                        Verbose,
+                                        Release,
+                                        SetName,
+                                        SAFE,
+                                        BD.out
+                                        ){
 
     #cat(paste(rep("_",50),collapse=""))
 
