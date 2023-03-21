@@ -21,19 +21,63 @@ Check.Params <- function (HLA,Loci.Set,Exon,All.Pairwise,Trim,Res,EVS.rm,Missing
   # Numerics: Res=2, Missing=2, Cores.Lim=1L
   # Untested: Data, Results.Dir, Run.Tests, Loci.Set
 
-  if( is.na(as.logical(HLA)) ) { Err.Log(FALSE,"P.Error","HLA") ; stop("Analysis Stopped.",call.=FALSE) }
-  if( !missing(Loci.Set) && !is.list(Loci.Set) ) { Err.Log(FALSE,"P.Error","Loci.Set") ; stop("Analysis Stopped.",call.=FALSE) }
-  if( !missing(Exon) && !is.numeric(Exon) ) { Err.Log(FALSE,"P.Error","Exon") ; stop("Analysis Stopped.",call.=FALSE) }
-  if( !is.logical(All.Pairwise) ) { Err.Log(FALSE,"P.Error","All.Pairwise") ; stop("Analysis Stopped.",call.=FALSE) }
-  if( !is.logical(EVS.rm) ) { Err.Log(FALSE,"P.Error","EVS.rm") ; stop("Analysis Stopped.",call.=FALSE) }
-  if( !is.logical(Trim) ) { Err.Log(FALSE,"P.Error","Trim") ; stop("Analysis Stopped.",call.=FALSE) }
-  if( !is.logical(Return) ) { Err.Log(FALSE,"P.Error","Return") ; stop("Analysis Stopped.",call.=FALSE) }
-  if( !is.logical(Merge.Output) ) { Err.Log(FALSE,"P.Error","Merge.Output") ; stop("Analysis Stopped.",call.=FALSE) }
-  if( !is.logical(Verbose) ) { Err.Log(FALSE,"P.Error","Verbose") ; stop("Analysis Stopped.",call.=FALSE) }
-  if( !is.logical(Output) ) { Err.Log(FALSE,"P.Error","Output") ; stop("Analysis Stopped.",call.=FALSE) }
-  if( !is.numeric(Res) ) { Err.Log(FALSE,"P.Error","Res") ; stop("Analysis Stopped.",call.=FALSE) }
-  if( !is.numeric(Cores.Lim) && !is.integer(Cores.Lim) ) { Err.Log(FALSE,"P.Error","Cores.Lim") ; stop("Analysis Stopped.",call.=FALSE) }
-  if( !is.numeric(Missing) ) { if(Missing!="ignore") { Err.Log(FALSE,"P.Error","Missing") ; stop("Analysis Stopped.",call.=FALSE) } }
+  if(is.na(as.logical(HLA))){
+    Err.Log(FALSE,"P.Error","HLA")
+    stop("Analysis Stopped.",
+         call.=FALSE)
+  }
+  if(!missing(Loci.Set) && !is.list(Loci.Set)){
+    Err.Log(FALSE,"P.Error","Loci.Set")
+    stop("Analysis Stopped.",
+         call.=FALSE)
+  }
+  if(!missing(Exon) && !is.numeric(Exon)){
+    Err.Log(FALSE,"P.Error","Exon")
+    stop("Analysis Stopped.",
+         call.=FALSE)
+  }
+  if(!is.logical(All.Pairwise)){
+    Err.Log(FALSE,"P.Error","All.Pairwise")
+    stop("Analysis Stopped.",call.=FALSE)
+  }
+  if(!is.logical(EVS.rm)){
+    Err.Log(FALSE,"P.Error","EVS.rm")
+    stop("Analysis Stopped.",call.=FALSE)
+  }
+  if(!is.logical(Trim)){
+    Err.Log(FALSE,"P.Error","Trim")
+    stop("Analysis Stopped.",call.=FALSE)
+  }
+  if(!is.logical(Return)){
+    Err.Log(FALSE,"P.Error","Return")
+    stop("Analysis Stopped.",call.=FALSE)
+  }
+  if(!is.logical(Merge.Output)){
+    Err.Log(FALSE,"P.Error","Merge.Output")
+    stop("Analysis Stopped.",call.=FALSE)
+  }
+  if(!is.logical(Verbose)){
+    Err.Log(FALSE,"P.Error","Verbose")
+    stop("Analysis Stopped.",call.=FALSE)
+  }
+  if(!is.logical(Output)){
+    Err.Log(FALSE,"P.Error","Output")
+    stop("Analysis Stopped.",call.=FALSE)
+  }
+  if(!is.numeric(Res)){
+    Err.Log(FALSE,"P.Error","Res")
+    stop("Analysis Stopped.",call.=FALSE)
+  }
+  if(!is.numeric(Cores.Lim) && !is.integer(Cores.Lim)){
+    Err.Log(FALSE,"P.Error","Cores.Lim")
+    stop("Analysis Stopped.",call.=FALSE)
+  }
+  if(!is.numeric(Missing)){
+    if(Missing!="ignore"){
+      Err.Log(FALSE,"P.Error","Missing")
+      stop("Analysis Stopped.",call.=FALSE)
+    }
+  }
 
 }
 

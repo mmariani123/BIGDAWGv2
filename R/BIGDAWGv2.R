@@ -87,7 +87,7 @@ BIGDAWGv2 <- function(Data,
 
   ######## CHECK MULTICORE LIMITATIONS #################
 
-  Cores <- BIGDAWG::Check.Cores(Cores.Lim,Output)
+  Cores <- BIGDAWG::Check.Cores(Cores.Lim, Output)
 
   cat(rep("=",40))
   cat("\n       BIGDAWG: Bridging ImmunoGenomic Data Analysis Workflow Gaps\n")
@@ -323,25 +323,41 @@ if(Species=='hla'){
 
 if(HLA){
 
-  runHlaCheckOutput <- run_hla_checks(Trim=Trim,
-                            EVS.rm=EVS.rm,
-                            Run=Run,
-                            DRB345.test=DRB345.test,
-                            Output=Output,
-                            Cores=Cores,
-                            Res=Res)
+  runCheckOutput <-
+    run_hla_checks(Tab=Tab,
+                   Data.Col=Data.Col,
+                   Loci.Set=Loci.Set,
+                   Trim=Trim,
+                   EVS.rm=EVS.rm,
+                   Run=Run,
+                   DRB345.test=DRB345.test,
+                   Output=Output,
+                   Cores=Cores,
+                   Res=Res)
 
-  Set <- runHlaCheckOutput[[1]]
-  Release <- runHlaCheckOutput[[2]]
-
+}else if(Species=='dla'){
+  runCheckOutput <-
+    run_dla_checks(Tab=Tab,
+                   Data.Col=Data.Col,
+                   Loci.Set=Loci.Set,
+                   Trim=Trim,
+                   EVS.rm=EVS.rm,
+                   Run=Run,
+                   #DRB345.test=DRB345.test,
+                   Output=Output,
+                   Cores=Cores,
+                   Res=Res)
 }
+
+Set <- runCheckOutput[[1]]
+Release <- runCheckOutput[[2]]
 
 ###########################################################
 #### ================================================= ####
 #### _____________ Case-Control Summary ______________ ####
 #### ================================================= ####
 ###########################################################
-
+browser()
 case_control_summary(Trim=Trim,
                      Tab=Tab,
                      Res=Res,
@@ -383,8 +399,7 @@ if(Output){
       Exon.tmp <- NULL
     }
 
-    Params.Run <- list(Time = format(
-                        Sys.time(), "%a %b %d %X %Y"),
+    Params.Run <- list(Time = format(Sys.time(), "%a %b %d %X %Y"),
                        BD.Version = as.character(
                                       packageVersion("BIGDAWG")),
                        Cores.Used = Cores,

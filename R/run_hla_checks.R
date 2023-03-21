@@ -3,9 +3,21 @@
 #' run_hla_checks
 #'
 #' Check format and quality of the HLA data
-#' @param Loci HLA Loci to be fetched. Limited Loci available.
+#' @param Tab
+#' @param Data.Cols
+#' @param Loci.Set
+#' @param Trim
+#' @param EVS.rm
+#' @param Run
+#' @param DRB345.test
+#' @param Output
+#' @param Cores
+#' @param Res
 #' @note This function is for internal BIGDAWG use only.
-run_hla_checks <- function(Trim,
+run_hla_checks <- function(Tab,
+                           Data.Col,
+                           Loci.Set,
+                           Trim,
                            EVS.rm,
                            Run,
                            DRB345.test,
