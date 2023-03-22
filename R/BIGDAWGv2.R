@@ -357,7 +357,7 @@ Release <- runCheckOutput[[2]]
 #### _____________ Case-Control Summary ______________ ####
 #### ================================================= ####
 ###########################################################
-browser()
+
 case_control_summary(Trim=Trim,
                      Tab=Tab,
                      Res=Res,
