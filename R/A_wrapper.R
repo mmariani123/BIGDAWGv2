@@ -12,7 +12,15 @@
 #' @param Output Data return carryover from main BIGDAWG function
 #' @param Verbose Summary display carryover from main BIGDAWG function
 #' @note This function is for internal BIGDAWG use only.
-A.wrapper <- function(loci,loci.ColNames,genos,grp,Exon,EPL,Cores,Strict.Bin,Output,Verbose) {
+A.wrapper <- function(loci,
+                      loci.ColNames,
+                      genos,
+                      grp,
+                      Exon,
+                      EPL,
+                      Cores,
+                      Strict.Bin,
+                      Output,Verbose){
 
   cat("\n>>>> STARTING AMINO ACID LEVEL ANALYSIS...\n")
 
@@ -34,7 +42,7 @@ A.wrapper <- function(loci,loci.ColNames,genos,grp,Exon,EPL,Cores,Strict.Bin,Out
     cat(Locus,".. ")
 
     # Read in Locus Alignment file for Locus specific alignments
-    if( !missing(Exon) ) {
+    if(!missing(Exon)) {
 
       Exon <- as.numeric(unique(unlist(Exon)))
 
@@ -64,7 +72,12 @@ A.wrapper <- function(loci,loci.ColNames,genos,grp,Exon,EPL,Cores,Strict.Bin,Out
     }
 
     # Run Amino Acid Analysis
-    A.list <- A(Locus,loci.ColNames,genos,grp,Strict.Bin,ExonAlign,Cores)
+    A.list <- A(Locus,
+                loci.ColNames,
+                genos,grp,
+                Strict.Bin,
+                ExonAlign,
+                Cores)
 
     # Build Output Lists
     AAlog[[Locus]] <- A.list[['log']]

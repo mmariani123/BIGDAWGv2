@@ -224,23 +224,23 @@ BIGDAWGv2 <- function(Data,
 
   }
 
-  if("A" %in% Run){
-    if(Species=='hla'){
-
-    }else if(Species=='dla'){
-
-    }else if(Species=='gla'){
-
-    }else if(Species=='cla'){
-
-    }else{
-      stop(paste0('Innapropriate <Species> parameter, ',
-                  'program terminating ...'))
-    }
-  }else{
-    cat(paste0('Amino Acid test not selected, ',
-               'test will not be run.\n'))
-  }
+  #if("A" %in% Run){
+  #  if(Species=='hla'){
+  #    run_amino_acid_analysis_hla()
+  #  }else if(Species=='dla'){
+  #    run_amino_acid_analysis_dla()
+  #  }else if(Species=='gla'){
+  #    stop('Chicken AA analaysis not working correctly')
+  #  }else if(Species=='cla'){
+  #    stop('Cow AA analysis not working wcurrently')
+  #  }else{
+  #    stop(paste0('Innapropriate <Species> parameter, ',
+  #                'program terminating ...'))
+  #  }
+  #}else{
+  #  cat(paste0('Amino Acid test not selected, ',
+  #             'test will not be run.\n'))
+  #}
 
 ############## BAD DATA DEFINITIONS - No 1's or 0's######
 
@@ -263,10 +263,12 @@ rows.rm <- BIGDAWGv2::missing_data_check(Missing=Missing,
 ############################################################
 ############################################################
 
-BIGDAWGv2::mult_set_dup_check(Loci.Set,
-                              All.Pairwise,
-                              Run,
-                              Output)
+#browser()
+
+#BIGDAWGv2::mult_set_dup_check(Loci.Set,
+#                              All.Pairwise,
+#                              Run,
+#                             Output)
 
 ############ DATA MERGE AND NUMBER OF LOCI ###############
 ##########################################################
@@ -279,22 +281,25 @@ BIGDAWGv2::data_merge_num_loci_check(Output,
                                      All.Pairwise,
                                      Tab)
 
-#################### HLA Specific Checks #################
+################ Load Protein Align Data #################
 ##########################################################
 ##########################################################
 ##########################################################
 ##########################################################
+
+#browser()
+
+#The position list will have to be specific to the species
+#ie Update ptn list
+#and the position list has to do with the core exons
 
 if(Species=='hla'){
-  #THe position list will have to be specific to the species
-  #ie Update ptn list
-  #and the position list has to do with the core exons
-
   #Check for the updated ExonPtnList 'UpdatePtnList' and
-  #use if found.
+  #use if found:
   UpdatePtnList <- NULL
   UPL <- paste0(path.package('BIGDAWG'),
               "/data/UpdatePtnAlign.RData")
+
   if(file.exists(UPL)) {
     load(UPL)
     EPL <- UpdatePtnList
@@ -305,14 +310,45 @@ if(Species=='hla'){
     EPL <- BIGDAWG::ExonPtnList
     UPL.flag=F
   }
-
-  if(Trim & !HLA){Err.Log(Output, "NotHLA.Trim")}
-  if(EVS.rm & !HLA){Err.Log(Output, "NotHLA.EVS.rm")}
-  if(!HLA){
-    DRBFLAG <- NULL
+}else if(Species=='dla'){
+  #Check for the updated ExonPtnList 'UpdatePtnList' and
+  #use if found:
+  UpdatePtnList <- NULL
+  #UPL <- paste0(path.package('BIGDAWG'),
+  #              "/data/UpdatePtnAlign.RData")
+  UPL <- system.file('extdata/dla/dla-drb1_nom_p.txt',
+                     package = "BIGDAWGv2")
+  if(file.exists(UPL)) {
+    EPL <- read.table(UPL,
+               skip=7,
+               header = FALSE,
+               stringsAsFactors = FALSE,
+               sep='\n')$V1
+    #load(UPL)
+    #EPL <- UpdatePtnList
+    #rm(UpdatePtnList)
+    UPL.flag=T
   }else{
-    DRB345.test <- length(grep("DRB345",colnames(Tab)))>0
+    stop('Need to load dla protein file manually right now')
+    rm(UpdatePtnList,UPL)
+    EPL <- BIGDAWG::ExonPtnList
+    UPL.flag=F
   }
+}else if(Species=='gla'){
+  stop('Chicken AA analysis not working yet.')
+}else if(Species=='cla'){
+  stop('Cow AA analysis not working yet.')
+}
+
+#if(Trim & !HLA){Err.Log(Output, "NotHLA.Trim")}
+#if(EVS.rm & !HLA){Err.Log(Output, "NotHLA.EVS.rm")}
+if(Trim){Err.Log(Output, paste0('Not_',Species,'.Trim'))}
+if(EVS.rm){Err.Log(Output, paste0('Not_',Species,'.EVS.rm'))}
+#if(!HLA){
+if(species!='hla'){
+  DRBFLAG <- NULL
+}else{
+  DRB345.test <- length(grep("DRB345",colnames(Tab)))>0
 }
 
 ################## What is below for ? #####################
@@ -321,8 +357,8 @@ if(Species=='hla'){
 ############################################################
 ############################################################
 
-if(HLA){
-
+#if(HLA){
+if(Species=='hla'){
   runCheckOutput <-
     run_hla_checks(Tab=Tab,
                    Data.Col=Data.Col,
@@ -347,6 +383,10 @@ if(HLA){
                    Output=Output,
                    Cores=Cores,
                    Res=Res)
+}else if(Species=='gla'){
+  stop('Chicken AA analysis not set up yet')
+}else if(Species=='cla'){
+  stop('Cow AA analysis not set up yet')
 }
 
 Set <- runCheckOutput[[1]]
@@ -371,24 +411,26 @@ case_control_summary(Trim=Trim,
 #### ================================================= ####
 ###########################################################
 
+#browser()
+
 if(Output){
 
-    if(HLA && !is.null(DRBFLAG)){
+    if(Species=='hla' && !is.null(DRBFLAG)){
       DRB345.tmp <- DRBFLAG
     }else{
       DRB345.tmp <- NULL
     }
-    if(HLA){
+    if(Species=='hla'){
       Trim.tmp <- Trim
     }else{
       Trim.tmp <- NULL
     }
-    if(HLA && Trim){
+    if(Species=='hla' && Trim){
       Res.tmp <- Res
     }else{
       Res.tmp <- NULL
     }
-    if(HLA){
+    if(Species=='hla'){
       EVS.rm.tmp <- EVS.rm
     }else{EVS.rm.tmp <- NULL
     }
@@ -489,7 +531,16 @@ if(sum(c("H","L","A") %in% Run) > 0){
     nloci <- as.numeric(length(loci)) # number of loci
     SetName <- paste('Set',k,sep="")
 
-    if(HLA==T){genos[genos=='^'] <- "00:00"}
+    #if(HLA==T){genos[genos=='^'] <- "00:00"}
+    if(Species=='hla'){
+      genos[genos=='^'] <- "00:00"
+    }else if(Species=='dla'){
+      #genos[genos=='^'] <- "00:00"
+    }else if(Species=="cla"){
+      genos[genos=='^'] <- "00:00"
+    }else if(Species=="gla"){
+      genos[genos=='^'] <- "00:00"
+    }
 
     if(Output){
 
@@ -514,7 +565,6 @@ if(sum(c("H","L","A") %in% Run) > 0){
       }
 
     SAFE <- c(ls(),"SAFE")
-
 
 ###########################################################
 #### ================================================= ####
@@ -577,6 +627,8 @@ BD.out <- run_locus_analysis(
 #### ================================================= ####
 ###########################################################
 
+browser()
+
 if("A" %in% Run){
 
   if(Species=='hla'){
@@ -604,6 +656,28 @@ if("A" %in% Run){
     SAFE <- output[[2]]
 
   }else if(Species=='dla'){
+    BD.out <- run_amino_acid_analysis_hla(
+      UPL.flag=UPL.flag,
+      nloci=nloci,
+      All.Pairwise=All.Pairwise,
+      SID=SID,
+      Tabsub=Tabsub,
+      loci=loci,
+      loci.ColNames,
+      genos=genos,
+      grp=grp,
+      Exon=Exon,
+      EPL=EPL,
+      Cores=Cores,
+      Strict.Bin=Strict.Bin,
+      Output=Output,
+      Verbose=Verbose,
+      Release=Release,
+      SetName=SetName,
+      SAFE=SAFE,
+      BD.out=BD.out)
+    BD.out <- output[[1]]
+    SAFE <- output[[2]]
 
   }else if(Species=='cla'){
 
