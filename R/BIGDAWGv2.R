@@ -69,7 +69,12 @@ BIGDAWGv2 <- function(Data,
 
   ################ Check Parameters #####################
 
-  HLA <- as.logical(HLA)
+  if(Species=='hla'){
+    #HLA <- as.logical(HLA)
+    HLA <- TRUE
+  }else{
+    HLA <- FALSE
+  }
 
   Check.Params(HLA,
                Loci.Set,
@@ -194,7 +199,7 @@ BIGDAWGv2 <- function(Data,
                       format(Sys.time(), "%d%m%y %H%M%S")
                       )
       dir.create(OutDir)
-    } else {
+    }else{
       OutDir <- Results.Dir
     }
   }
@@ -263,8 +268,6 @@ rows.rm <- BIGDAWGv2::missing_data_check(Missing=Missing,
 ############################################################
 ############################################################
 
-#browser()
-
 #BIGDAWGv2::mult_set_dup_check(Loci.Set,
 #                              All.Pairwise,
 #                              Run,
@@ -286,8 +289,6 @@ BIGDAWGv2::data_merge_num_loci_check(Output,
 ##########################################################
 ##########################################################
 ##########################################################
-
-#browser()
 
 #The position list will have to be specific to the species
 #ie Update ptn list
@@ -340,12 +341,14 @@ if(Species=='hla'){
   stop('Cow AA analysis not working yet.')
 }
 
+browser()
+
 #if(Trim & !HLA){Err.Log(Output, "NotHLA.Trim")}
 #if(EVS.rm & !HLA){Err.Log(Output, "NotHLA.EVS.rm")}
 if(Trim){Err.Log(Output, paste0('Not_',Species,'.Trim'))}
 if(EVS.rm){Err.Log(Output, paste0('Not_',Species,'.EVS.rm'))}
 #if(!HLA){
-if(species!='hla'){
+if(Species!='hla'){
   DRBFLAG <- NULL
 }else{
   DRB345.test <- length(grep("DRB345",colnames(Tab)))>0
@@ -369,7 +372,9 @@ if(Species=='hla'){
                    DRB345.test=DRB345.test,
                    Output=Output,
                    Cores=Cores,
-                   Res=Res)
+                   Res=Res,
+                   EPL=EPL,
+                   Species=Species)
 
 }else if(Species=='dla'){
   runCheckOutput <-
@@ -391,6 +396,7 @@ if(Species=='hla'){
 
 Set <- runCheckOutput[[1]]
 Release <- runCheckOutput[[2]]
+DRBFLAG <- runCheckOutput[[3]]
 
 ###########################################################
 #### ================================================= ####
@@ -603,7 +609,7 @@ if("H" %in% Run){
 
 if("L" %in% Run){
 
-BD.out <- run_locus_analysis(
+output <- run_locus_analysis(
             nloci=nloci,
             loci=loci,
             loci.ColNames=loci.ColNames,
@@ -632,7 +638,7 @@ browser()
 if("A" %in% Run){
 
   if(Species=='hla'){
-    BD.out <- run_amino_acid_analysis_hla(
+    output <- run_amino_acid_analysis_hla(
                 UPL.flag=UPL.flag,
                 nloci=nloci,
                 All.Pairwise=All.Pairwise,

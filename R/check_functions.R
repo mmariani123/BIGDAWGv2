@@ -15,7 +15,18 @@
 #' @param Merge.Output Logical Should analysis results be merged into a single file for easy access.
 #' @param Verbose Logical Should a summary of each analysis be displayed in console.
 #' @note This function is for internal use only.
-Check.Params <- function (HLA,Loci.Set,Exon,All.Pairwise,Trim,Res,EVS.rm,Missing,Cores.Lim,Return,Output,Merge.Output,Verbose) {
+Check.Params <- function (HLA,
+                          Loci.Set,
+                          Exon,
+                          All.Pairwise,
+                          Trim,
+                          Res,
+                          EVS.rm,
+                          Missing,
+                          Cores.Lim,
+                          Return,Output,
+                          Merge.Output,
+                          Verbose) {
 
   # Logicals: HLA=TRUE, All.Pairwise=FALSE, EVS.rm=FALSE, Trim=FALSE, Return=FALSE, Merge.FALSE, Verbose=TRUE, TRUE,
   # Numerics: Res=2, Missing=2, Cores.Lim=1L
@@ -137,6 +148,46 @@ CheckHLA <- function(x) {
   Flag <- as.logical(min(test)==2)
 
   return(Flag)
+}
+
+#' HLA Loci Legitimacy Check for Amino Acid Analysis
+#'
+#' Checks available loci against data to ensure complete overlap.
+#' @param x Loci available in exon protein list alignment object.
+#' @param y Unique column names
+#' @param Species Species under consideration
+#' @note This function is for internal BIGDAWG use only.
+CheckLoci <- function(x,y,Species) {
+  #Returns TRUE if absent locus(loci) encountered
+  #x=Loci available in ExonPtnList
+  #y=Loci.Set from data
+  Output <- list()
+  if(Species=='hla'){
+    y <- unique(unlist(y))
+    y <- gsub("HLA-","",y)
+    Flag <- (!sum(y %in% x) == length(y))
+    Output[['Flag']] <- Flag
+    if(Flag) {
+      Output[['Loci']] <- paste(y[!y %in% x],collapse=",")
+    }else{
+      Output[['Loci']] <- NA
+    }
+  }else if(Species=='dla'){
+    y <- unique(unlist(y))
+    y <- gsub("DLA-","",y)
+    Flag <- (!sum(y %in% x) == length(y))
+    Output[['Flag']] <- Flag
+    if(Flag) {
+      Output[['Loci']] <- paste(y[!y %in% x],collapse=",")
+    }else{
+      Output[['Loci']] <- NA
+    }
+  }else if(Species=='cla'){
+    stop('CheckLoci() error , no cow functionality yet')
+  }else if(Species=='gla'){
+    stop('CheckLoci() error , no chicken functionality yet')
+  }
+  return(Output)
 }
 
 #' HLA Loci Legitimacy Check for Amino Acid Analysis

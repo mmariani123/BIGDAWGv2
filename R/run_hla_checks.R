@@ -13,6 +13,8 @@
 #' @param Output
 #' @param Cores
 #' @param Res
+#' @param EPL Exon pointer list
+#' @param Species The species under consideration
 #' @note This function is for internal BIGDAWG use only.
 run_hla_checks <- function(Tab,
                            Data.Col,
@@ -23,7 +25,9 @@ run_hla_checks <- function(Tab,
                            DRB345.test,
                            Output,
                            Cores,
-                           Res){
+                           Res,
+                           EPL,
+                           Species){
 
   if(Trim | EVS.rm | "A" %in% Run | DRB345.test){
     cat("Running HLA specific check functions...\n")
@@ -164,7 +168,8 @@ run_hla_checks <- function(Tab,
               Release,
               ".\n"))
     test <- CheckLoci(names(EPL),
-                      unique(colnames(Tab)[Data.Col])
+                      unique(colnames(Tab)[Data.Col],
+                             Species=Species)
                      )
     if(test$Flag){
       Err.Log(Output,
@@ -223,6 +228,6 @@ run_hla_checks <- function(Tab,
            call. = F) }
   }
 
-  return(list(Set,Release))
+  return(list(Set,Release,DRBFLAG))
 
 }
