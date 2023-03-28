@@ -317,11 +317,11 @@ if(Species=='hla'){
   UpdatePtnList <- NULL
   #UPL <- paste0(path.package('BIGDAWG'),
   #              "/data/UpdatePtnAlign.RData")
-  UPL <- system.file('extdata/dla/dla-drb1_nom_p.txt',
+  UPL <- system.file('extdata/dla/dla_nom_p.txt',
                      package = "BIGDAWGv2")
   if(file.exists(UPL)) {
     EPL <- read.table(UPL,
-               skip=7,
+               skip=6,
                header = FALSE,
                stringsAsFactors = FALSE,
                sep='\n')$V1
@@ -340,8 +340,6 @@ if(Species=='hla'){
 }else if(Species=='cla'){
   stop('Cow AA analysis not working yet.')
 }
-
-browser()
 
 #if(Trim & !HLA){Err.Log(Output, "NotHLA.Trim")}
 #if(EVS.rm & !HLA){Err.Log(Output, "NotHLA.EVS.rm")}
@@ -416,8 +414,6 @@ case_control_summary(Trim=Trim,
 #### ____________ Write to Parameter File ____________ ####
 #### ================================================= ####
 ###########################################################
-
-#browser()
 
 if(Output){
 
@@ -632,8 +628,6 @@ output <- run_locus_analysis(
 #### _____________ Amino Acid Level 'A' ______________ ####
 #### ================================================= ####
 ###########################################################
-
-browser()
 
 if("A" %in% Run){
 

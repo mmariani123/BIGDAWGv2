@@ -230,7 +230,7 @@ run_dla_checks <- function(Tab,
   }
 
   Release <- 'current user-defined dog/dla'
-
-  return(list(Set,Release))
+  DRBFLAG <- FALSE
+  return(list(Set,Release,DRBFLAG))
 
 }

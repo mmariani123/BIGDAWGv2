@@ -1,20 +1,97 @@
 #' Update function for protein aligment upon new IMGT HLA data release
 #'
-#' This updates the protein aligment used in checking HLA loci and alleles as well as in the amino acid analysis.
+#' This updates the protein aligment used in checking HLA loci
+#' and alleles as well as in the amino acid analysis.
 #' @param Restore Logical specifying if the original alignment file be restored.
 #' @param Force Logical specifiying if update should be forced.
 #' @param Output Logical indicating if error reporting should be written to file.
-UpdateRelease <- function(Force=F,Restore=F,Output=F) {
+#' @param CreateNew Logical indicating if error reporting should be written to file
+#' @param Species Logical indicating if error reporting should be written to file
+UpdateRelease <- function(Force=F,
+                          Restore=F,
+                          Output=F,
+                          CreateNew=F,
+                          Species='hla'){
 
+create_dog <- function(){
 
-  if( !inherits(try(XML::readHTMLTable("http://cran.r-project.org/web/packages/BIGDAWG/index.html",header=F),silent=T),"try-error") ) {
+  #Step 1 get loci
+
+  Loci <- c("A",
+            "B",
+            "C",
+            "DPA1",
+            "DPB1",
+            "DQA1",
+            "DQB1",
+            "DRB1",
+            "DRB3",
+            "DRB4",
+            "DRB5")
+
+  Loci.get <- c("A",
+                "B",
+                "C",
+                "DPA1",
+                "DPB1",
+                "DQA1",
+                "DQB1",
+                "DRB")
+
+  #Exon Info
+  RefTab <- BIGDAWG::ExonPtnList$RefExons
+
+  #STEP 2: Download protein alignments and other ancillary files
+  cat("Creating reference object for the amino acid analysis.\n")
+  cat("Downloading alignment files from the IMGT/HLA.\n")
+  GetFiles(Loci.get)
+  Release <-
+    read.table('Release.txt',
+               sep="\t") # created during GetFiles download
+
+  #STEP 3: Format alignments for exons of interest
+  cat("Formatting alignment files.\n")
+  for(i in 1:length(Loci)){
+    Locus <- Loci[i]
+    ExonPtnAlign.Create(Locus,RefTab)
+  }
+
+  #STEP 4: Create ExonPtnAlign list object for BIGDAWG package
+  AlignObj.Update(Loci,Release,RefTab)
+
+  #STEP 5: Clean up
+  cat("Cleaning up.\n")
+  invisible(file.remove(dir()[which(dir() %in% Safe!=T)]))
+
+  cat("Updated.\n")
+
+}
+
+if(CreateNew==T){
+
+  switchOutput <- switch(
+    Species,
+    'hla' = create_human(),
+    'dla' = create_dog(),
+    'cla' = create_cow(),
+    'gla' = create_chicken(),
+  )
+
+}else{
+
+  if(!inherits(
+    try(XML::readHTMLTable(
+          "http://cran.r-project.org/web/packages/BIGDAWG/index.html",
+          header=F),
+        silent=T),
+        "try-error")){
 
     MainDir <- getwd()
     on.exit(setwd(MainDir), add = TRUE)
 
     getDir <- path.package('BIGDAWG')
     putDir <- paste(getDir,"/data",sep="")
-    if(!dir.exists(putDir)) { dir.create(putDir) }
+    if(!dir.exists(putDir)){dir.create(putDir)}
 
     if(!Restore) {
 
@@ -24,30 +101,51 @@ UpdateRelease <- function(Force=F,Restore=F,Output=F) {
         setwd(putDir)
 
         # Get IMGT Release Version
-        invisible(download.file("ftp://ftp.ebi.ac.uk/pub/databases/ipd/imgt/hla/release_version.txt",destfile="release_version.txt",method="libcurl"))
-        Release <- read.table("release_version.txt",comment.char="",sep="\t")
-        Release <- apply(Release,MARGIN=1,FUN=function(x) gsub(": ",":",x))
+        invisible(
+          download.file(
+            paste0('ftp://ftp.ebi.ac.uk/pub/databases/ipd',
+                   '/imgt/hla/release_version.txt'),
+                   destfile="release_version.txt",
+                   method="libcurl"))
+        Release <- read.table("release_version.txt",
+                              comment.char="",
+                              sep="\t")
+        Release <- apply(Release,
+                         MARGIN=1,
+                         FUN=function(x) gsub(": ",":",x)
+                         )
         RV.current <- unlist(strsplit(Release[3],split=":"))[2]
         file.remove("release_version.txt")
 
         # Get BIGDAWG
-        UPL <- paste(path.package('BIGDAWG'),"/data/UpdatePtnAlign.RData",sep="")
-        UpdatePtnList <- NULL ; rm(UpdatePtnList)
-        if( file.exists(UPL) ) {
+        UPL <- paste(path.package('BIGDAWG'),
+                     "/data/UpdatePtnAlign.RData",
+                     sep="")
+        UpdatePtnList <- NULL
+        rm(UpdatePtnList)
+        if(file.exists(UPL)){
           load(UPL)
           EPL <- UpdatePtnList
           rm(UpdatePtnList,UPL)
           UPL.flag=T
-        } else {
+        }else{
           EPL <- ExonPtnList
           UPL.flag=F }
 
         RV.BIGDAWG <- EPL$Release.Version
 
-        cat("Versions:\n","IMGT/HLA current: ",RV.current,"\n BIGDAWG version: ",RV.BIGDAWG,"\n")
-        if(grepl(RV.current,RV.BIGDAWG)) { Flag <- T } else { Flag <- F }
+        cat('Versions:\n',
+            'IMGT/HLA current: ',
+            RV.current,
+            '\n BIGDAWG version: ',
+            RV.BIGDAWG,'\n')
+        if(grepl(RV.current,RV.BIGDAWG)){
+          Flag <- T
+        }else{
+          Flag <- F
+        }
 
-      } else {
+      }else{
 
         Flag <- F
 
@@ -56,61 +154,91 @@ UpdateRelease <- function(Force=F,Restore=F,Output=F) {
       #Run Update if Flag = T
       if(Flag) {
 
-        cat("\nYour database seems up to date. Use Force = T to force the update.")
+        cat(paste0('\nYour database seems up to date. ',
+                   'Use Force = T to force the update.'))
 
-      } else {
+      }else{
 
         # For creating UpdatePtnAlign.RData object
         # Define download directory
-          setwd(putDir)
-          Safe <- dir()
-          Safe <- c(Safe[!grepl(".txt",Safe)],"UpdatePtnAlign.RData")
+        setwd(putDir)
+        Safe <- dir()
+        Safe <- c(Safe[!grepl(".txt",Safe)],"UpdatePtnAlign.RData")
 
         #STEP 1: Define Loci and Read in Reference Exon Map Files
-          Loci <- c("A","B","C","DPA1","DPB1","DQA1","DQB1","DRB1","DRB3","DRB4","DRB5")
+        Loci <- c("A",
+                  "B",
+                  "C",
+                  "DPA1",
+                  "DPB1",
+                  "DQA1",
+                  "DQB1",
+                  "DRB1",
+                  "DRB3",
+                  "DRB4",
+                  "DRB5")
 
-          #Currently DRB1, DRB3, DRB4, DRB5 aligments in single file
-          #Remove if split into individual files
-          Loci.get <- c("A","B","C","DPA1","DPB1","DQA1","DQB1","DRB")
+        #Currently DRB1, DRB3, DRB4, DRB5 aligments in single file
+        #Remove if split into individual files
+        Loci.get <- c("A",
+                      "B",
+                      "C",
+                      "DPA1",
+                      "DPB1",
+                      "DQA1",
+                      "DQB1",
+                      "DRB")
 
-          #Exon Info
-          RefTab <- BIGDAWG::ExonPtnList$RefExons
+        #Exon Info
+        RefTab <- BIGDAWG::ExonPtnList$RefExons
 
         #STEP 2: Download protein alignments and other ancillary files
-          cat("Updating reference object for the amino acid analysis.\n")
-          cat("Downloading alignment files from the IMGT/HLA.\n")
-          GetFiles(Loci.get)
-          Release <- read.table('Release.txt',sep="\t") # created during GetFiles download
+        cat("Updating reference object for the amino acid analysis.\n")
+        cat("Downloading alignment files from the IMGT/HLA.\n")
+        GetFiles(Loci.get)
+        Release <-
+          read.table('Release.txt',
+                     sep="\t") # created during GetFiles download
 
         #STEP 3: Format alignments for exons of interest
-          cat("Formatting alignment files.\n")
-          for(i in 1:length(Loci)) { Locus <- Loci[i] ; ExonPtnAlign.Create(Locus,RefTab) }
+        cat("Formatting alignment files.\n")
+        for(i in 1:length(Loci)){
+          Locus <- Loci[i]
+          ExonPtnAlign.Create(Locus,RefTab)
+        }
 
         #STEP 4: Create ExonPtnAlign list object for BIGDAWG package
-          AlignObj.Update(Loci,Release,RefTab)
+        AlignObj.Update(Loci,Release,RefTab)
 
         #STEP 5: Clean up
-          cat("Cleaning up.\n")
-          invisible(file.remove(dir()[which(dir() %in% Safe!=T)]))
+        cat("Cleaning up.\n")
+        invisible(file.remove(dir()[which(dir() %in% Safe!=T)]))
 
-          cat("Updated.\n")
+        cat("Updated.\n")
       }
 
-    } else if (Restore) {
+    }else if(Restore){
 
       setwd(putDir)
-      if(!file.exists('UpdatePtnAlign.RData')) { stop("No prior update to restore.", call.= F) }
-      cat("Restoring original alignment reference object for amino acid analysis.\n")
+      if(!file.exists('UpdatePtnAlign.RData')){
+        stop("No prior update to restore.",
+             call.= F)
+      }
+      cat(paste0('Restoring original alignment reference object ',
+                 'for amino acid analysis.\n'))
       invisible(file.remove('UpdatePtnAlign.RData'))
-      cat("Restored.\n")
+      cat('Restored.\n')
 
     }
 
-  } else {
+  }else{
 
-    Err.Log(Output,"No.Internet")
-    stop("Update stopped.",call.=F)
+    Err.Log(Output,"No.Internet or page has moved")
+    stop("Update stopped, No Internet or Page has moved.",
+         call.=F)
 
   }
+
+}
 
 }

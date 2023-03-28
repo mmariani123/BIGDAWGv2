@@ -173,6 +173,7 @@ CheckLoci <- function(x,y,Species) {
       Output[['Loci']] <- NA
     }
   }else if(Species=='dla'){
+    browser()
     y <- unique(unlist(y))
     y <- gsub("DLA-","",y)
     Flag <- (!sum(y %in% x) == length(y))
@@ -224,7 +225,7 @@ CheckLoci <- function(x,y) {
 #' @param y Genotypes from data file
 #' @note This function is for internal BIGDAWG use only.
 CheckAlleles <- function(x,y) {
-
+  browser()
   # Returns TRUE if unknown allele(s) encountered
   # Checks at 2 levels of resolution: Full, 3-Field, 2-Field, 1-Field
 
@@ -236,12 +237,18 @@ CheckAlleles <- function(x,y) {
 
     # Database Alleles
     x.locus <- x[[i]][,'Allele']
-    x.locus[] <- sapply(x.locus, FUN = gsub, pattern="[[:alpha:]]", replacement="")
+    x.locus[] <- sapply(x.locus,
+                        FUN = gsub,
+                        pattern="[[:alpha:]]",
+                        replacement="")
 
     # Current Data Alleles
     y.locus <- y[,grep(i,colnames(y))]
     y.locus <- unique(c(y.locus[,1],y.locus[,2]))
-    y.locus[] <- sapply(y.locus, FUN = gsub, pattern="[[:alpha:]]", replacement="")
+    y.locus[] <- sapply(y.locus,
+                        FUN = gsub,
+                        pattern="[[:alpha:]]",
+                        replacement="")
     y.locus <- na.omit(y.locus)
     y.locus <- y.locus[y.locus!="^"]
     y.locus <- y.locus[y.locus!=""]
