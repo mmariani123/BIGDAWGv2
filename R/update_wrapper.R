@@ -13,7 +13,7 @@ UpdateRelease <- function(Force=F,
                           CreateNew=F,
                           Species='hla'){
 
-create_dog <- function(){
+if(species=='dla' & CreateNew==TRUE){
 
   #Step 1 get loci
 
@@ -29,6 +29,14 @@ create_dog <- function(){
             "DRB4",
             "DRB5")
 
+  loci <- c('12',
+            '64',
+            '79',
+            '88',
+            'DQA1',
+            'DQB1',
+            'DRB1')
+
   Loci.get <- c("A",
                 "B",
                 "C",
@@ -38,44 +46,104 @@ create_dog <- function(){
                 "DQB1",
                 "DRB")
 
+  loci.get <- c('12',
+                '64',
+                '79',
+                '88',
+                'DQA1',
+                'DQB1',
+                'DRB1')
+
   #Exon Info
   RefTab <- BIGDAWG::ExonPtnList$RefExons
 
+  RefTab <- data.frame(Locus=c('12',
+                               '64',
+                               '79',
+                               '88',
+                               'DQA1',
+                               'DQB1',
+                               'DRB1'),
+                       Reference.Locus=c('12',
+                                         '64',
+                                         '79',
+                                         '88',
+                                         'DQA1',
+                                         'DQB1',
+                                         'DRB1'),
+                       Reference.Allele=c('001:02',
+                                          '001:02',
+                                          '001:01',
+                                          '001:01',
+                                          '001:01',
+                                          '001:01',
+                                          '001:01'),
+                       Reference.Accession=c('DLA00100',
+                                             'DLA00200',
+                                             'DLA00300',
+                                             'DLA00400',
+                                             'DLA00500',
+                                             'DLA00600',
+                                             'DLA00700'),
+                       Reference.Start=c(-7,
+                                         -7,
+                                         -7,
+                                         -7,
+                                         -7,
+                                         -7,
+                                         -7),
+                       stringsAsFactors = FALSE)
+
+  #Release$V1
+  #Release[[1]][1]
+  #Release[[1]][2]
+
+  release <- Release
+  release[[1]][1] <- "2023-03-29"
+  release[[1]][2] <- "IPD-IMGT/HLA 3.51.0"
+
+  debug(ExonPtnAlign.Create)
+  undebug(ExonPtnAlign.Create)
+  cat("Formatting alignment files.\n")
+  for(i in 1:length(loci)){
+    locus <- loci[i]
+    ExonPtnAlign.Create(locus,RefTab)
+  }
+  AlignObj.Update(loci,Release,RefTab)
+
+  cat("Created.\n")
+
   #STEP 2: Download protein alignments and other ancillary files
-  cat("Creating reference object for the amino acid analysis.\n")
-  cat("Downloading alignment files from the IMGT/HLA.\n")
-  GetFiles(Loci.get)
-  Release <-
-    read.table('Release.txt',
-               sep="\t") # created during GetFiles download
+  #cat("Creating reference object for the amino acid analysis.\n")
+  #cat("Downloading alignment files from the IMGT/HLA.\n")
+  #GetFiles(Loci.get)
+  #Release <-
+  #  read.table('Release.txt',
+  #             sep="\t") # created during GetFiles download
 
   #STEP 3: Format alignments for exons of interest
-  cat("Formatting alignment files.\n")
-  for(i in 1:length(Loci)){
-    Locus <- Loci[i]
-    ExonPtnAlign.Create(Locus,RefTab)
-  }
+  #cat("Formatting alignment files.\n")
+  #for(i in 1:length(Loci)){
+  #  Locus <- Loci[i]
+  #  ExonPtnAlign.Create(Locus,RefTab)
+  #}
 
   #STEP 4: Create ExonPtnAlign list object for BIGDAWG package
-  AlignObj.Update(Loci,Release,RefTab)
+  #AlignObj.Update(Loci,Release,RefTab)
 
   #STEP 5: Clean up
-  cat("Cleaning up.\n")
-  invisible(file.remove(dir()[which(dir() %in% Safe!=T)]))
+  #cat("Cleaning up.\n")
+  #invisible(file.remove(dir()[which(dir() %in% Safe!=T)]))
 
-  cat("Updated.\n")
+  #cat("Created.\n")
 
-}
-
-if(CreateNew==T){
-
-  switchOutput <- switch(
-    Species,
-    'hla' = create_human(),
-    'dla' = create_dog(),
-    'cla' = create_cow(),
-    'gla' = create_chicken(),
-  )
+  #switchOutput <- switch(
+  #  Species,
+  #  'hla' = create_human(),
+  #  'dla' = create_dog(),
+  #  'cla' = create_cow(),
+  #  'gla' = create_chicken(),
+  #)
 
 }else{
 
