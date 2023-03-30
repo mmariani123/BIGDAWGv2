@@ -206,6 +206,7 @@ fasta_to_aln_2 <- function(fileIn='',
 #' @param ncharName the length in characters of the allele nanmes
 #' corresponding to the first field in the downloaded -protein.aln files
 #' @param protHeader First header lines of the output file fiven as a single
+#' @param addHeader Logical, whether to add header to individual files
 #' string with '\n' to denote newlines.
 #' @note This function is for general use
 #' @examples
@@ -248,7 +249,8 @@ make_prot_file <- function(fileIn = "",
                         pos=23,
                         lengths,
                         nCharName,
-                        protHeader=""){
+                        protHeader="",
+                        addHeader=F){
 
   #library(data.table)
   #library(dplyr)
@@ -266,6 +268,7 @@ make_prot_file <- function(fileIn = "",
                    header = FALSE,
                    stringsAsFactors = FALSE)
   groupNames   <- df[,1]
+  ncharName    <- nchar(df[max(length(df[,1])),1])
   strings      <- df[,2]
   protLengths  <- df[,3]
   uniqProtLengths <- as.numeric(unique(protLengths))
@@ -376,9 +379,11 @@ make_prot_file <- function(fileIn = "",
   dfMat2 <- dfMat[,-1,1]
 
   #Create output file and add header:
-  fileConn <- file(fileOut)
-  writeLines(protHeader, fileConn)
-  close(fileConn)
+  if(addHeader==T){
+    fileConn <- file(fileOut)
+    writeLines(protHeader, fileConn)
+    close(fileConn)
+  }
 
   setsList <- list()
   negStart <- lengths[1]
@@ -441,7 +446,7 @@ make_prot_file <- function(fileIn = "",
       }
       else if(i!=1 & j==1){
         #remaining from last line:
-        browser()
+        #browser()
         #prevLineRemaining <- ((i-1)*100 - ((max(unlist(setsList[[i-1]])) + abs(negStart))) + ifelse(j==1,2,0))
         prevLineRemaining <- ((i-1)*100 - ((max(unlist(setsList[[i-1]])) + abs(negStart))))
         #Subtract the inter column spaces from the previous line
@@ -525,8 +530,19 @@ make_prot_file <- function(fileIn = "",
     writeLines(paste(posLine,collapse = ""), fileConn)
     writeLines(paste(vertLine,collapse = ""), fileConn)
     close(fileConn)
-
+    browser()
+    maxDf1 <- max(nchar(dfMat1))
+    for(z in length(dfMat1)){
+      dfMat1[z] <- ifelse(nchar(dfMat1[z])<maxDf1,
+                    paste0(dfMat1[z],
+                           paste0(
+                             rep(" ",
+                                 times=((abs(nchar(dfMat1[z])-maxDf1)))),
+                             collapse="")),
+                   dfMat1[z])
+    }
     write.table(
+    #data.table::fwrite(
       cbind(dfMat1,
             dfMat2[,c((i*10-9):(ifelse(i*10>nCol,nCol,i*10)))]),
       file=fileOut,
@@ -534,7 +550,8 @@ make_prot_file <- function(fileIn = "",
       col.names = FALSE,
       row.names = FALSE,
       quote = FALSE,
-      sep=" ")
+      sep=" ",
+      colClasses('character'))
 
     fileConn <- file(fileOut, open='a')
     writeLines('',fileConn)

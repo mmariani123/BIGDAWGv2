@@ -115,9 +115,11 @@ PgrpExtract <- function(x,y) {
 #' Dynamically creates an alignmnet of Allele exons for Analysis.
 #' @param Locus Locus alignment to be formatted.
 #' @param RefTab Reference exon protein information for alignment formatting.
+#' @param Spedcies The species under consideration
 #' @note This function is for internal BIGDAWG use only.
-ExonPtnAlign.Create <- function(Locus,RefTab){
+ExonPtnAlign.Create <- function(Locus,RefTab,Species){
 
+  if(Species=='hla'){
   #########################################################################
   # Need to remove if DRB split into single locus files
   if(grepl("DRB",Locus)){
@@ -139,6 +141,20 @@ ExonPtnAlign.Create <- function(Locus,RefTab){
                       colClasses="character")
   Pgrps[,1] <- gsub("\\*", "", Pgrps[,1])
   Pgrps <- PgrpFormat(Pgrps,Locus)
+
+  }else if(Species=="dla"){
+  Pgrps <- read.table(system.file('extdata/dla/dla_nom_p.txt',
+                                  package = 'BIGDAWGv2'),
+                      fill=T,
+                      header=F,
+                      sep=";",
+                      stringsAsFactors=F,
+                      strip.white=T,
+                      colClasses="character")
+  browser()
+  Pgrps[,1] <- gsub("DLA-|\\*", "", Pgrps[,1])
+  Pgrps <- PgrpFormat(Pgrps,Locus)
+  }
 
   #Read in Alignment
   Name <- paste0(Locus.get,"_prot.txt")

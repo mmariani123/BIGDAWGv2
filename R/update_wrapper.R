@@ -13,6 +13,8 @@ UpdateRelease <- function(Force=F,
                           CreateNew=F,
                           Species='hla'){
 
+browser()
+
 if(species=='dla' & CreateNew==TRUE){
 
   #Step 1 get loci
@@ -98,16 +100,15 @@ if(species=='dla' & CreateNew==TRUE){
   #Release[[1]][1]
   #Release[[1]][2]
 
-  release <- Release
-  release[[1]][1] <- "2023-03-29"
-  release[[1]][2] <- "IPD-IMGT/HLA 3.51.0"
+  release <- c(BIGDAWG::ExonPtnList$Release.Version,
+               BIGDAWG::ExonPtnList$Release.Date)
+  release[1] <- "2023-03-29"
+  release[2] <- "IPD-IMGT/HLA 3.51.0"
 
-  debug(ExonPtnAlign.Create)
-  undebug(ExonPtnAlign.Create)
   cat("Formatting alignment files.\n")
   for(i in 1:length(loci)){
     locus <- loci[i]
-    ExonPtnAlign.Create(locus,RefTab)
+    ExonPtnAlign.Create(locus,RefTab,Species)
   }
   AlignObj.Update(loci,Release,RefTab)
 
