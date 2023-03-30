@@ -268,7 +268,7 @@ make_prot_file <- function(fileIn = "",
                    header = FALSE,
                    stringsAsFactors = FALSE)
   groupNames   <- df[,1]
-  ncharName    <- nchar(df[max(length(df[,1])),1])
+  #ncharName    <- nchar(df[max(length(df[,1])),1])
   strings      <- df[,2]
   protLengths  <- df[,3]
   uniqProtLengths <- as.numeric(unique(protLengths))
@@ -412,7 +412,11 @@ make_prot_file <- function(fileIn = "",
         posLine[[j]] <-
           paste('prot',
                 paste(rep(" ",
-                          times=nCharName-nchar('prot')-1),
+                          #times=0,
+                          #times=nCharName-nchar('prot')
+                          times=nCharName-nchar('prot') -
+                          1
+                          ),
                       collapse=""),
                 lengths[1],
                 collapse="")
@@ -420,7 +424,9 @@ make_prot_file <- function(fileIn = "",
         vertLine[[j]] <-
           paste(
                 paste(rep(" ",
-                          times=nCharName-nchar('prot')+4),
+                          times=nCharName-nchar('prot') +
+                          4
+                          ),
                       collapse=""),
                 '|',
                 collapse="")
@@ -459,10 +465,11 @@ make_prot_file <- function(fileIn = "",
           (max(unlist(setsList[[i-1]])))
         finalDist <-
           interDist -
-          prevLineRemaining +
-          ((nCharName+1) - nchar('prot')) -
-          2
-          ##-3
+          prevLineRemaining #-
+          #((nCharName) -
+          #nchar('prot') #-
+          #2
+          ##3
         #(nchar('prot')-1) -
         #6
         #(nCharName)
@@ -481,7 +488,7 @@ make_prot_file <- function(fileIn = "",
         #                    lengths[length(unlist(setsList[1:i-1]))]) -
         #                   ((i-1)*100 - (lengths[length(unlist(setsList[1:i-1]))] + abs(negStart)))
         #)/10))
-        bcs <- ifelse(abs(finalDist>10),ceiling(abs(finalDist)/10)-1,0)
+        bcs <- ifelse(abs(finalDist>10),ceiling(abs(finalDist)/10),1)
         print(paste0('between column spaces = ',as.character(bcs)))
 
         posLine[[j]] <- paste('prot',
@@ -499,14 +506,16 @@ make_prot_file <- function(fileIn = "",
           interDist <-
             max(lengths) -
             setsList[[i]][j-1] -
-            nchar(setsList[[i]][j-1]) -
-            1
+            nchar(setsList[[i]][j-1]) #-
+            #1
+          if(interDist<=nchar(setsList[[i]][j-1])){next}
         }else{
           interDist <-
             setsList[[i]][j] -
             setsList[[i]][j-1] -
             nchar(setsList[[i]][j-1]) -
             1
+          if(interDist<=nchar(setsList[[i]][j-1])){next}
         }
 
           print(paste0('interDist = ',as.character(interDist)))
@@ -530,7 +539,7 @@ make_prot_file <- function(fileIn = "",
     writeLines(paste(posLine,collapse = ""), fileConn)
     writeLines(paste(vertLine,collapse = ""), fileConn)
     close(fileConn)
-    browser()
+    #browser()
     maxDf1 <- max(nchar(dfMat1))
     for(z in length(dfMat1)){
       dfMat1[z] <- ifelse(nchar(dfMat1[z])<maxDf1,
@@ -551,7 +560,8 @@ make_prot_file <- function(fileIn = "",
       row.names = FALSE,
       quote = FALSE,
       sep=" ",
-      colClasses('character'))
+      #colClasses('character')
+      )
 
     fileConn <- file(fileOut, open='a')
     writeLines('',fileConn)
@@ -588,7 +598,12 @@ make_p_group_file <- function(fileInP,
 
            #print(length(pIds))
            geneTmp <- gsub("(.*)\\*.*","\\1", pGroups[1], perl=TRUE)
-           fileOutP <- paste0("./inst/extdata/",species,"/",fileInP,"_nom_p.txt")
+           fileOutP <- paste0("./inst/extdata/",
+                              species,
+                              "/",
+                              gsub("_prot.txt",
+                                   "_nom_p.txt",
+                                   fileInP))
            if(file.exists(fileOutP)){
              print(paste0(fileOutP, "aleady exists, removing ..."))
              file.remove(fileOutP)
