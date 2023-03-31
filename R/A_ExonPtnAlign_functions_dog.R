@@ -115,7 +115,7 @@ PgrpExtract <- function(x,y) {
 #' Dynamically creates an alignmnet of Allele exons for Analysis.
 #' @param Locus Locus alignment to be formatted.
 #' @param RefTab Reference exon protein information for alignment formatting.
-#' @param Spedcies The species under consideration
+#' @param Species The species under consideration
 #' @note This function is for internal BIGDAWG use only.
 ExonPtnAlign.Create <- function(Locus,RefTab,Species){
 
@@ -143,6 +143,7 @@ ExonPtnAlign.Create <- function(Locus,RefTab,Species){
   Pgrps <- PgrpFormat(Pgrps,Locus)
 
   }else if(Species=="dla"){
+  Locus.get <- Locus
   Pgrps <- read.table(system.file('extdata/dla/dla_nom_p.txt',
                                   package = 'BIGDAWGv2'),
                       fill=T,
@@ -157,7 +158,14 @@ ExonPtnAlign.Create <- function(Locus,RefTab,Species){
   }
 
   #Read in Alignment
-  Name <- paste0(Locus.get,"_prot.txt")
+  Name <- system.file(paste0('extdata/',
+                             Species,
+                             .Platform$file.sep,
+                             Species,
+                             '-',
+                             Locus.get,
+                             '_prot.txt'),
+                      package = 'BIGDAWGv2')
   Align <- read.table(Name,
                       fill=T,
                       header=F,
@@ -175,6 +183,8 @@ ExonPtnAlign.Create <- function(Locus,RefTab,Species){
   Align[,1] <- sapply(Align[,1],FUN=gsub,pattern=" ",replacement="")
   Align <- strsplit(Align[,1],"~")
   Align <- as.matrix(do.call(rbind,Align))
+
+  browser()
 
   #Adjust rows to blank where Sequence column == Allele Name
   Align[which(Align[,1]==Align[,2]),2] <- ""
@@ -224,6 +234,23 @@ ExonPtnAlign.Create <- function(Locus,RefTab,Species){
   AlignMatrix <- cbind(Align[,1:4],Align.split)
   rownames(AlignMatrix) <- NULL
 
+  browser()
+  if(Species=='dla'){
+    #truncate ref alleles to 2 positions for now for testing
+    for(z in 1:nrow(AlignMatrix)){
+      splittedAllele <- unlist(
+        strsplit(AlignMatrix[z,'FullName'],
+                split='\\*|:'))
+      AlignMatrix[z,'FullName'] <-
+        paste0(splittedAllele[1],
+            '*',
+            paste0(splittedAllele[2:3],collapse=":"))
+    }
+    RefAllele <- paste(RefTab[which(RefTab[,'Locus']==Locus),'Reference.Locus'],
+                       RefTab[which(RefTab[,'Locus']==Locus),'Reference.Allele'],
+                       sep="*")
+  }else{
+
   #Ensure Reference in Row 1
   RefAllele <- paste(RefTab[which(RefTab[,'Locus']==Locus),'Reference.Locus'],
                      RefTab[which(RefTab[,'Locus']==Locus),'Reference.Allele'],
@@ -239,6 +266,9 @@ ExonPtnAlign.Create <- function(Locus,RefTab,Species){
 
   }
 
+  }
+
+  browser()
   #Save Reference Row
   RefSeq <- AlignMatrix[1,]
 

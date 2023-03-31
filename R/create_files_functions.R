@@ -410,7 +410,7 @@ make_prot_file <- function(fileIn = "",
     for(j in 1:length(lengthsNow)){
       if(j==1 & i ==1){
         posLine[[j]] <-
-          paste('prot',
+          paste('Prot',
                 paste(rep(" ",
                           #times=0,
                           #times=nCharName-nchar('prot')
@@ -491,7 +491,7 @@ make_prot_file <- function(fileIn = "",
         bcs <- ifelse(abs(finalDist>10),ceiling(abs(finalDist)/10),1)
         print(paste0('between column spaces = ',as.character(bcs)))
 
-        posLine[[j]] <- paste('prot',
+        posLine[[j]] <- paste('Prot',
                               paste(rep(" ",times=finalDist+bcs),collapse=""),
                               setsList[[i]][1],collapse="")
 

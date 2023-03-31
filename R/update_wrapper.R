@@ -273,7 +273,7 @@ if(species=='dla' & CreateNew==TRUE){
         cat("Formatting alignment files.\n")
         for(i in 1:length(Loci)){
           Locus <- Loci[i]
-          ExonPtnAlign.Create(Locus,RefTab)
+          ExonPtnAlign.Create(Locus,RefTab,Species = Species)
         }
 
         #STEP 4: Create ExonPtnAlign list object for BIGDAWG package
