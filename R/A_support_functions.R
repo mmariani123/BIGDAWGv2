@@ -28,15 +28,20 @@ AlignmentFilter <- function(Align, Alleles, Locus) {
         Allele <- Alleles.M[m]
         Alignsub.Grp <- Align.sub[which(Align.sub[,"Trimmed"]==Allele),]
 
-        Unknowns.Grp <- which(Alignsub.Grp[,'Unknowns']==min(Alignsub.Grp[,'Unknowns']))
-        if(length(Unknowns.Grp)>1) { Unknowns.Grp <- Unknowns.Grp[1] }
+        Unknowns.Grp <-
+          which(Alignsub.Grp[,'Unknowns']==min(Alignsub.Grp[,'Unknowns']))
+        if(length(Unknowns.Grp)>1){
+          Unknowns.Grp <- Unknowns.Grp[1]
+        }
         Align.tmp[[Allele]] <- Alignsub.Grp[Unknowns.Grp,]
 
       }
       Align.tmp <- do.call(rbind,Align.tmp)
 
       if( length(Alleles.S) > 0 ) {
-        AlignMatrix <- rbind(Align.tmp, Align.sub[which(Align.sub[,'Trimmed'] %in% Alleles.S==T),,drop=F])
+        AlignMatrix <- rbind(Align.tmp,
+                             Align.sub[which(Align.sub[,'Trimmed'] %in%
+                                               Alleles.S==T),,drop=F])
       } else {
         AlignMatrix <- Align.tmp
       }
@@ -47,10 +52,20 @@ AlignmentFilter <- function(Align, Alleles, Locus) {
 
     }
 
+    browser()
+
     AlignMatrix <- cbind(rep(Locus,nrow(AlignMatrix)),AlignMatrix)
     rownames(AlignMatrix) <- NULL
     colnames(AlignMatrix)[1] <- "Locus"
     colnames(AlignMatrix)[which(colnames(AlignMatrix)=="Trimmed")] <- "Allele.2D"
+
+    AlignMatrix <- as.data.frame(AlignMatrix,
+                                 stringsAsFactors = FALSE)
+    #for(i in 1:length(AlignMatrix)){
+    #  AlignMatrix[i,'Allele2D'] <- unlist(AlignMatrix[i,'Allele2D'])
+    #}
+    AlignMatrix <- apply(AlignMatrix,2,unlist)
+    AlignMatrix <- as.matrix(AlignMatrix)
     AlignMatrix <- AlignMatrix[ order(AlignMatrix[,'Allele.2D']), ]
 
   } else {

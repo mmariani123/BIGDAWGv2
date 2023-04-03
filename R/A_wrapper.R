@@ -20,7 +20,8 @@ A.wrapper <- function(loci,
                       EPL,
                       Cores,
                       Strict.Bin,
-                      Output,Verbose){
+                      Output,
+                      Verbose){
 
   cat("\n>>>> STARTING AMINO ACID LEVEL ANALYSIS...\n")
 
