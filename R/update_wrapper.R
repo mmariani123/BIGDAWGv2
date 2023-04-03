@@ -13,7 +13,7 @@ UpdateRelease <- function(Force=F,
                           CreateNew=F,
                           Species='hla'){
 
-browser()
+##browser()
 
 if(species=='dla' & CreateNew==TRUE){
 
@@ -100,10 +100,13 @@ if(species=='dla' & CreateNew==TRUE){
   #Release[[1]][1]
   #Release[[1]][2]
 
-  release <- c(BIGDAWG::ExonPtnList$Release.Version,
-               BIGDAWG::ExonPtnList$Release.Date)
-  release[1] <- "2023-03-29"
-  release[2] <- "IPD-IMGT/HLA 3.51.0"
+  Release <- data.frame(
+               V1=BIGDAWG::ExonPtnList$Release.Version,
+               V2=BIGDAWG::ExonPtnList$Release.Date,
+               stringsAsFactors = FALSE)
+
+  Release[1,] <- "2023-03-29"
+  Release[2,] <- "IPD-IMGT/HLA 3.51.0"
 
   cat("Formatting alignment files.\n")
   for(i in 1:length(loci)){
@@ -276,6 +279,7 @@ if(species=='dla' & CreateNew==TRUE){
           ExonPtnAlign.Create(Locus,RefTab,Species = Species)
         }
 
+        #browser()
         #STEP 4: Create ExonPtnAlign list object for BIGDAWG package
         AlignObj.Update(Loci,Release,RefTab)
 

@@ -152,7 +152,7 @@ ExonPtnAlign.Create <- function(Locus,RefTab,Species){
                       stringsAsFactors=F,
                       strip.white=T,
                       colClasses="character")
-  browser()
+  #browser()
   Pgrps[,1] <- gsub("DLA-|\\*", "", Pgrps[,1])
   Pgrps <- PgrpFormat(Pgrps,Locus)
   }
@@ -184,7 +184,7 @@ ExonPtnAlign.Create <- function(Locus,RefTab,Species){
   Align <- strsplit(Align[,1],"~")
   Align <- as.matrix(do.call(rbind,Align))
 
-  browser()
+  #browser()
 
   #Adjust rows to blank where Sequence column == Allele Name
   Align[which(Align[,1]==Align[,2]),2] <- ""
@@ -234,7 +234,7 @@ ExonPtnAlign.Create <- function(Locus,RefTab,Species){
   AlignMatrix <- cbind(Align[,1:4],Align.split)
   rownames(AlignMatrix) <- NULL
 
-  browser()
+  #browser()
   if(Species=='dla'){
     #truncate ref alleles to 2 positions for now for testing
     for(z in 1:nrow(AlignMatrix)){
@@ -268,7 +268,7 @@ ExonPtnAlign.Create <- function(Locus,RefTab,Species){
 
   }
 
-  browser()
+  #browser()
   #Save Reference Row
   RefSeq <- AlignMatrix[1,]
 
@@ -430,6 +430,208 @@ AlignObj.Update <- function(Loci,Release,RefTab){
   UpdatePtnList[['Release.Version']] <- as.character(Release[2,])
   UpdatePtnList[['Release.Date']] <- as.character(Release[1,])
   UpdatePtnList[['RefExons']] <- RefTab
-  save(UpdatePtnList,file="UpdatePtnAlign.RData")
+  #save(UpdatePtnList,file="UpdatePtnAlign.RData")
+
+  ##MM 04/03/2023
+  #I will add the ExonPtnMap field to ExonPtnListbecause
+  #I can't seem to find the code where this is implemented
+  #For reference look agt BIGDAWG::ExonPtnList$ExonPtnMap
+
+  `12` <- data.frame(Locus=c('12',
+                                   '12',
+                                   '12',
+                                   '12',
+                                   '12',
+                                   '12',
+                                   '12'),
+                           Exon=c(1,2,3,4,5,6,7),
+                           Start=c(34,34,34,34,34,34,34),
+                           Stop=c(80,80,80,80,80,80,80),
+                           stringsAsFactors=FALSE)
+
+  `64` <- data.frame(Locus=c('64',
+                                    '64',
+                                    '64',
+                                    '64',
+                                    '64',
+                                    '64',
+                                    '64'),
+                            Exon=c(1,2,3,4,5,6,7),
+                            Start=c(34,34,34,34,34,34,34),
+                            Stop=c(80,80,80,80,80,80,80),
+                            stringsAsFactors=FALSE)
+
+  `79` <- data.frame(Locus=c('79',
+                                    '79',
+                                    '79',
+                                    '79',
+                                    '79',
+                                    '79',
+                                    '79'),
+                            Exon=c(1,2,3,4,5,6,7),
+                            Start=c(34,34,34,34,34,34,34),
+                            Stop=c(80,80,80,80,80,80,80),
+                            stringsAsFactors=FALSE)
+
+  `88` <- data.frame(Locus=c('88',
+                                    '88',
+                                    '88',
+                                    '88',
+                                    '88',
+                                    '88',
+                                    '88'),
+                            Exon=c(1,2,3,4,5,6,7),
+                            Start=c(34,34,34,34,34,34,34),
+                            Stop=c(80,80,80,80,80,80,80),
+                            stringsAsFactors=FALSE)
+
+  DQA1 <- data.frame(Locus=c('DQA1',
+                                    'DQA1',
+                                    'DQA1',
+                                    'DQA1',
+                                    'DQA1',
+                                    'DQA1',
+                                    'DQA1'),
+                            Exon=c(1,2,3,4,5,6,7),
+                            Start=c(34,34,34,34,34,34,34),
+                            Stop=c(80,80,80,80,80,80,80),
+                            stringsAsFactors=FALSE)
+
+  DQB1 <- data.frame(Locus=c('DQB1',
+                                    'DQB1',
+                                    'DQB1',
+                                    'DQB1',
+                                    'DQB1',
+                                    'DQB1',
+                                    'DQB1'),
+                            Exon=c(1,2,3,4,5,6,7),
+                            Start=c(34,34,34,34,34,34,34),
+                            Stop=c(80,80,80,80,80,80,80),
+                            stringsAsFactors=FALSE)
+
+  DRB1 <- data.frame(Locus=c('DRB1',
+                                    'DRB1',
+                                    'DRB1',
+                                    'DRB1',
+                                    'DRB1',
+                                    'DRB1',
+                                    'DRB1'),
+                            Exon=c(1,2,3,4,5,6,7),
+                            Start=c(34,34,34,34,34,34,34),
+                            Stop=c(80,80,80,80,80,80,80),
+                            stringsAsFactors=FALSE)
+
+  UpdatePtnList[['ExonPtnMap']] <- list(
+    '12'=`12`,
+    '64'=`64`,
+    '79'=`79`,
+    '88'=`88`,
+    'DQA1'=DQA1,
+    'DQB1'=DQB1,
+    'DRB1'=DRB1
+  )
+
+  save(UpdatePtnList, file="UpdatePtnAlign.RData")
+
+  ##Example, look at human:
+  ##BIGDAWG::ExonPtnList$ExonPtnMap
+
+  #$A
+  #Locus Exon Start Stop
+  #[1,] "A"   "1"  "1"   "24"
+  #[2,] "A"   "2"  "25"  "114"
+  #[3,] "A"   "3"  "115" "206"
+  #[4,] "A"   "4"  "207" "298"
+  #[5,] "A"   "5"  "299" "337"
+  #[6,] "A"   "6"  "338" "348"
+  #[7,] "A"   "7"  "349" "364"
+  #[8,] "A"   "8"  "365" "365"
+
+  #$B
+  #Locus Exon Start Stop
+  #[1,] "B"   "1"  "1"   "24"
+  #[2,] "B"   "2"  "25"  "114"
+  #[3,] "B"   "3"  "115" "206"
+  #[4,] "B"   "4"  "207" "298"
+  #[5,] "B"   "5"  "299" "337"
+  #[6,] "B"   "6"  "338" "348"
+  #[7,] "B"   "7"  "349" "362"
+
+  #$C
+  #Locus Exon Start Stop
+  #[1,] "C"   "1"  "1"   "24"
+  #[2,] "C"   "2"  "25"  "114"
+  #[3,] "C"   "3"  "115" "206"
+  #[4,] "C"   "4"  "207" "298"
+  #[5,] "C"   "5"  "299" "338"
+  #[6,] "C"   "6"  "339" "349"
+  #[7,] "C"   "7"  "350" "365"
+  #[8,] "C"   "8"  "366" "366"
+
+  #$DPA1
+  #Locus  Exon Start Stop
+  #[1,] "DPA1" "1"  "1"   "33"
+  #[2,] "DPA1" "2"  "34"  "115"
+  #[3,] "DPA1" "3"  "116" "209"
+  #[4,] "DPA1" "4"  "210" "260"
+
+  #$DPB1
+  #Locus  Exon Start Stop
+  #[1,] "DPB1" "1"  "1"   "33"
+  #[2,] "DPB1" "2"  "34"  "121"
+  #[3,] "DPB1" "3"  "122" "215"
+  #[4,] "DPB1" "4"  "216" "252"
+  #[5,] "DPB1" "5"  "253" "258"
+
+  #$DQA1
+  #Locus  Exon Start Stop
+  #[1,] "DQA1" "1"  "1"   "27"
+  #[2,] "DQA1" "2"  "28"  "110"
+  #[3,] "DQA1" "3"  "111" "204"
+  #[4,] "DQA1" "4"  "205" "255"
+
+  #$DQB1
+  #Locus  Exon Start Stop
+  #[1,] "DQB1" "1"  "1"   "36"
+  #[2,] "DQB1" "2"  "37"  "126"
+  #[3,] "DQB1" "3"  "127" "220"
+  #[4,] "DQB1" "4"  "221" "257"
+  #[5,] "DQB1" "5"  "258" "261"
+
+  #$DRB1
+  #Locus  Exon Start Stop
+  #[1,] "DRB1" "1"  "1"   "33"
+  #[2,] "DRB1" "2"  "34"  "123"
+  #[3,] "DRB1" "3"  "124" "217"
+  #[4,] "DRB1" "4"  "218" "254"
+  #[5,] "DRB1" "5"  "255" "262"
+  #[6,] "DRB1" "6"  "263" "266"
+
+  #$DRB3
+  #Locus  Exon Start Stop
+  #[1,] "DRB3" "1"  "1"   "33"
+  #[2,] "DRB3" "2"  "34"  "123"
+  #[3,] "DRB3" "3"  "124" "217"
+  #[4,] "DRB3" "4"  "218" "254"
+  #[5,] "DRB3" "5"  "255" "262"
+  #[6,] "DRB3" "6"  "263" "266"
+
+  #$DRB4
+  #Locus  Exon Start Stop
+  #[1,] "DRB4" "1"  "1"   "33"
+  #[2,] "DRB4" "2"  "34"  "123"
+  #[3,] "DRB4" "3"  "124" "217"
+  #[4,] "DRB4" "4"  "218" "254"
+  #[5,] "DRB4" "5"  "255" "262"
+  #[6,] "DRB4" "6"  "263" "266"
+
+  #$DRB5
+  #Locus  Exon Start Stop
+  #[1,] "DRB5" "1"  "1"   "33"
+  #3[2,] "DRB5" "2"  "34"  "123"
+  #[3,] "DRB5" "3"  "124" "217"
+  #[4,] "DRB5" "4"  "218" "254"
+  #[5,] "DRB5" "5"  "255" "262"
+  #[6,] "DRB5" "6"  "263" "266"
 
 }

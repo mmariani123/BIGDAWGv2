@@ -317,17 +317,27 @@ if(Species=='hla'){
   UpdatePtnList <- NULL
   #UPL <- paste0(path.package('BIGDAWG'),
   #              "/data/UpdatePtnAlign.RData")
-  UPL <- system.file('extdata/dla/dla_nom_p.txt',
-                     package = "BIGDAWGv2")
-  if(file.exists(UPL)) {
-    EPL <- read.table(UPL,
-               skip=6,
-               header = FALSE,
-               stringsAsFactors = FALSE,
-               sep='\n')$V1
-    #load(UPL)
-    #EPL <- UpdatePtnList
-    #rm(UpdatePtnList)
+  #UPL <- system.file('extdata/dla/dla_nom_p.txt',
+  #                   package = "BIGDAWGv2")
+
+  #UPL <-
+  #  path.package('BIGDAWGv2',
+  #    paste0('C:/Users/mmari/OneDrive/Documents',
+  #    'GitHub/BIGDAWGv2/UpdatePtnAlign.RData'))
+
+  #UPL <- system.file('UpdatePtnAlign.RData','BIGDAWGv2')
+  UPL <- paste0('C:/Users/mmari/OneDrive/Documents/',
+                'GitHub/BIGDAWGv2/UpdatePtnAlign.RData')
+
+  if(file.exists(UPL)){
+    #EPL <- read.table(UPL,
+    #           skip=6,
+    #           header = FALSE,
+    #           stringsAsFactors = FALSE,
+    #           sep='\n')$V1
+    load(UPL)
+    EPL <- UpdatePtnList
+    rm(UpdatePtnList)
     UPL.flag=T
   }else{
     stop('Need to load dla protein file manually right now')

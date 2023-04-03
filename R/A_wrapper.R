@@ -54,9 +54,21 @@ A.wrapper <- function(loci,
       EPL.Exon <- list() ; p <- NULL
       for (e in 1:length(Exon)) {
         getExon <- Exon[e]
-        if( getExon %in% E.Ptn.Starts[,'Exon'] ) {
-          if ( is.null(p) ) { p=1 } else { p = p + 1 }
-          EPL.Exon[[p]] <- Exon.Filter(Locus,getExon,EPL.Locus,RefExons,E.Ptn.Starts)
+
+        if(getExon %in% E.Ptn.Starts[,'Exon']){
+
+          browser()
+
+          if(is.null(p)){
+            p=1
+          }else{
+            p = p + 1
+          }
+          EPL.Exon[[p]] <- Exon.Filter(Locus,
+                                       getExon,
+                                       EPL.Locus,
+                                       RefExons,
+                                       E.Ptn.Starts)
         } else {
           Err.Log(Output,"Exon",Locus)
           stop("Analysis Stopped.",call. = F)
@@ -71,10 +83,13 @@ A.wrapper <- function(loci,
 
     }
 
+    #browser()
+
     # Run Amino Acid Analysis
     A.list <- A(Locus,
                 loci.ColNames,
-                genos,grp,
+                genos,
+                grp,
                 Strict.Bin,
                 ExonAlign,
                 Cores)

@@ -10,7 +10,11 @@
 #' @param ExonAlign Exon protein alignment filtered for locus.
 #' @param Cores Number of cores to use for analysis.
 #' @note This function is for internal BIGDAWG use only.
-A <- function(Locus,loci.ColNames,genos,grp,Strict.Bin,ExonAlign,Cores) {
+A <- function(Locus,
+              loci.ColNames,
+              genos,grp,
+              Strict.Bin,
+              ExonAlign,Cores){
 
   # pull out locus specific columns
   getCol <- seq(1,length(loci.ColNames),1)[loci.ColNames %in% Locus]
@@ -22,7 +26,9 @@ A <- function(Locus,loci.ColNames,genos,grp,Strict.Bin,ExonAlign,Cores) {
   Alleles <- unique(c(HLA_grp[,2],HLA_grp[,3]))
   Alleles2F <- sort(unique(as.character(sapply(Alleles, GetField, Res=2))))
 
-  if( length(Alleles2F)>1 ) {
+  if(length(Alleles2F)>1){
+
+    browser()
 
     # Filter exon alignment matrix for specific alleles
     TabAA <- AlignmentFilter(ExonAlign,Alleles2F,Locus)

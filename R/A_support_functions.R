@@ -191,9 +191,13 @@ Create.Null.Table <- function(Locus,Names,nr) {
 #' @param RefExons Reference Exon Table
 #' @param E.Ptn.Starts Exon Protein Overlay Map
 #' @note This function is for internal BIGDAWG use only.
-Exon.Filter <- function(Locus,Exon,EPL.Locus,RefExons,E.Ptn.Starts) {
+Exon.Filter <- function(Locus,
+                        Exon,
+                        EPL.Locus,
+                        RefExons,
+                        E.Ptn.Starts){
 
-  # Get Reference Protoen Start
+  # Get Reference Protien Start
   Ref.Start <- as.numeric(RefExons[RefExons[,'Locus']==Locus,'Reference.Start'])
 
   # Define 5'/3' Boundary Positions
@@ -201,6 +205,7 @@ Exon.Filter <- function(Locus,Exon,EPL.Locus,RefExons,E.Ptn.Starts) {
   E.Stop <- as.numeric(E.Ptn.Starts[which(E.Ptn.Starts[,'Exon']==Exon),'Stop'])
   E.Length <- E.Stop - E.Start + 1
 
+  browser()
   # Ensure Number Shift Due to lack of Position 0
   if( E.Start >= abs(Ref.Start) ) {
     E.Start.Pos <- E.Start + Ref.Start
@@ -209,7 +214,9 @@ Exon.Filter <- function(Locus,Exon,EPL.Locus,RefExons,E.Ptn.Starts) {
   }
 
   E.Stop.Pos <- E.Start.Pos + E.Length - 1
-  if( E.Start.Pos < 0 && E.Stop.Pos > 0 )  { E.Stop.Pos <- E.Start.Pos + E.Length }
+  if(E.Start.Pos < 0 && E.Stop.Pos > 0){
+    E.Stop.Pos <- E.Start.Pos + E.Length
+  }
 
   # Find Exon 5' Boundary Position in ExonPtnAlign Object
   E.Start.Pos <- paste0("Pos.",E.Start.Pos)
