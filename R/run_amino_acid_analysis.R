@@ -25,7 +25,7 @@
 # ======================================================================== ####
 # Amino Acid Level 'A' ___________________________________________________ ####
 
-run_amino_acid_analysis_hla <- function(UPL.flag,
+run_amino_acid_analysis <- function(UPL.flag,
                                         nloci,
                                         All.Pairwise,
                                         SID,

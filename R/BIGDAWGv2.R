@@ -642,7 +642,7 @@ output <- run_locus_analysis(
 if("A" %in% Run){
 
   if(Species=='hla'){
-    output <- run_amino_acid_analysis_hla(
+    output <- run_amino_acid_analysis(
                 UPL.flag=UPL.flag,
                 nloci=nloci,
                 All.Pairwise=All.Pairwise,
