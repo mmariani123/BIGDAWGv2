@@ -1,4 +1,4 @@
-#' run_amino_acid_analysis_hla
+#' run_amino_acid_analysis
 #'
 #' Function to run the amino acid analysis
 #' @param UPL.flag UPL.flag parameter

@@ -666,7 +666,7 @@ if("A" %in% Run){
     SAFE <- output[[2]]
 
   }else if(Species=='dla'){
-    output <- run_amino_acid_analysis_hla(
+    output <- run_amino_acid_analysis(
       UPL.flag=UPL.flag,
       nloci=nloci,
       All.Pairwise=All.Pairwise,
