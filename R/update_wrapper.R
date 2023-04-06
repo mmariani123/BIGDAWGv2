@@ -7,11 +7,13 @@
 #' @param Output Logical indicating if error reporting should be written to file.
 #' @param CreateNew Logical indicating if error reporting should be written to file
 #' @param Species Logical indicating if error reporting should be written to file
+#' @param OutputDir Where the new/updated object will be placed.
 UpdateRelease <- function(Force=F,
                           Restore=F,
                           Output=F,
                           CreateNew=F,
-                          Species='hla'){
+                          Species='hla',
+                          OutputDir=getwd()){
 
 ##browser()
 
@@ -113,7 +115,7 @@ if(species=='dla' & CreateNew==TRUE){
     locus <- loci[i]
     ExonPtnAlign.Create(locus,RefTab,Species)
   }
-  AlignObj.Update(loci,Release,RefTab)
+  AlignObj.Update(loci,Release,RefTab,Species)
 
   cat("Created.\n")
 
@@ -233,9 +235,9 @@ if(species=='dla' & CreateNew==TRUE){
 
         # For creating UpdatePtnAlign.RData object
         # Define download directory
-        setwd(putDir)
-        Safe <- dir()
-        Safe <- c(Safe[!grepl(".txt",Safe)],"UpdatePtnAlign.RData")
+        Safe <- OutputDir
+        Safe <- c(Safe[!grepl(".txt",Safe)],
+                  "UpdatePtnAlign.RData")
 
         #STEP 1: Define Loci and Read in Reference Exon Map Files
         Loci <- c("A",

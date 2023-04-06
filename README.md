@@ -82,4 +82,25 @@ The other functions in A_support_functions.R are run
 in the A.R file. 
 
 Thus run_amino_acid_analysis() will run A_wrapper(), 
-which will run ExonFilter(), Condense.EPL(), and A(). 
+which will run ExonFilter(), Condense.EPL(), and A().
+
+#####################################################
+
+end_analysis() function in BIGDAWGv2 main:
+
+Do we want to set a specific path here?
+
+For the ExonPtnAlign_functions_dog.R file, added the Species
+parameter and output path to extdata + species for the 
+functions contained therein. 
+
+Note system.file vs. package.file
+
+Probably could clean up ExonPtnAlign.Create() function more
+after adjustments
+
+Remember had to use truncated allele for dog right now, see 
+the ALignMatrix in A_ExonPtnAlign_functions_dog.R
+
+Is the release.txt file being stored in the right location?
+

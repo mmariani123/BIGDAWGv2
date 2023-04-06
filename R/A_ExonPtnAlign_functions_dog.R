@@ -144,7 +144,12 @@ ExonPtnAlign.Create <- function(Locus,RefTab,Species){
 
   }else if(Species=="dla"){
   Locus.get <- Locus
-  Pgrps <- read.table(system.file('extdata/dla/dla_nom_p.txt',
+  browser()
+  Pgrps <- read.table(system.file(paste0('extdata/',
+                                  Species,
+                                  '/',
+                                  Species,
+                                  '_nom_p.txt'),
                                   package = 'BIGDAWGv2'),
                       fill=T,
                       header=F,
@@ -160,7 +165,7 @@ ExonPtnAlign.Create <- function(Locus,RefTab,Species){
   #Read in Alignment
   Name <- system.file(paste0('extdata/',
                              Species,
-                             .Platform$file.sep,
+                             '/',
                              Species,
                              '-',
                              Locus.get,
@@ -377,9 +382,16 @@ ExonPtnAlign.Create <- function(Locus,RefTab,Species){
   colnames(AlignMatrix)[ncol(AlignMatrix)] <- "InDels"
 
   rownames(AlignMatrix) <- NULL
-  FileName <- paste("ExonPtnAlign_",Locus,".obj",sep="")
-
-  save(AlignMatrix,file=FileName)
+  FileName <-
+    paste0(
+      devtools::package_file(),
+        '/inst/extdata/',
+        Species,
+        '/ExonPtnAlign_',
+        Locus,
+        '.obj')
+  save(AlignMatrix,
+       file=FileName)
 
 }
 
@@ -389,15 +401,22 @@ ExonPtnAlign.Create <- function(Locus,RefTab,Species){
 #' @param Loci Loci to be bundled.
 #' @param Release IMGT/HLA database release version.
 #' @param RefTab Data of reference exons used for protein alignment creation.
+#' @param Species The species being considered
 #' @note This function is for internal BIGDAWG use only.
-AlignObj.Create <- function(Loci,Release,RefTab) {
+AlignObj.Create <- function(Loci,Release,RefTab,Species){
 
   AlignMatrix <- NULL; rm(AlignMatrix)
 
   ExonPtnList <- list()
   for(i in 1:length(Loci)) {
     Locus <- Loci[i]
-    FileName <- paste("ExonPtnAlign_",Locus,".obj",sep="")
+    FileName <- system.file(
+      paste0('extdata/',
+             Species,
+             "/ExonPtnAlign_",
+             Locus,
+             ".obj"),
+      package = 'BIDAWGv2')
     load(FileName) #Loads AlignMatrix
     ExonPtnList[[Locus]] <- AlignMatrix
   }
@@ -405,7 +424,12 @@ AlignObj.Create <- function(Loci,Release,RefTab) {
   ExonPtnList[['Release.Version']] <- as.character(Release[2,])
   ExonPtnList[['Release.Date']] <- as.character(Release[1,])
   ExonPtnList[['RefExons']] <- RefTab
-  save(ExonPtnList,file="ExonPtnAlign.obj")
+  browser()
+  save(ExonPtnList,
+       file=paste0(devtools::package_file(),
+         '/inst/extdata/',
+         Species,
+         '/ExonPtnAlign.obj'))
 
 }
 
@@ -415,15 +439,24 @@ AlignObj.Create <- function(Loci,Release,RefTab) {
 #' @param Loci Loci to be bundled.
 #' @param Release IMGT/HLA database release version.
 #' @param RefTab Data of reference exons used for protein alignment creation.
+#' @param Species The Species under consideration
 #' @note This function is for internal BIGDAWG use only.
-AlignObj.Update <- function(Loci,Release,RefTab){
+AlignObj.Update <- function(Loci,Release,RefTab,Species){
 
   AlignMatrix <- NULL; rm(AlignMatrix)
+
+  browser()
 
   UpdatePtnList <- list()
   for(i in 1:length(Loci)){
     Locus <- Loci[i]
-    FileName <- paste0("ExonPtnAlign_",Locus,".obj")
+    FileName <- system.file(
+      paste0('extdata/',
+             Species,
+             "/ExonPtnAlign_",
+             Locus,
+             ".obj"),
+      package = 'BIGDAWGv2')
     load(FileName) #Loads AlignMatrix
     UpdatePtnList[[Locus]] <- AlignMatrix
   }
@@ -531,7 +564,13 @@ AlignObj.Update <- function(Loci,Release,RefTab){
     'DRB1'=DRB1
   )
 
-  save(UpdatePtnList, file="UpdatePtnAlign.RData")
+  browser()
+  save(UpdatePtnList,
+       file=paste0(
+         devtools::package_file(),
+         '/inst/extdata/',
+         Species,
+         '/UpdatePtnAlign.RData'))
 
   ##Example, look at human:
   ##BIGDAWG::ExonPtnList$ExonPtnMap
