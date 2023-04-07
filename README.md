@@ -1,6 +1,8 @@
-## BIGDAWGv2
+# BIGDAWGv2
 
-#1.) Install BIGDAWGv2 from GitHub using devtools
+##Install
+
+###1.) Install BIGDAWGv2 from GitHub using devtools
 
 ```{r install}
 
@@ -10,8 +12,8 @@ if(!system.file(package='BIGDAWGv2')){
 }
 
 ```
-
-#2.) Run the Labrador (Lab) test data making sure to select
+##Run
+###2.) Run the Labrador (Lab) test data making sure to select
 'dla' as the species parameter
 
 ```{r run}
@@ -53,6 +55,9 @@ bigdawg.results <- BIGDAWGv2(
   Verbose      = TRUE)
 
 ```
+
+##Notes
+###3.) Ongoing notes
 
 ############################## NOTES ###################################
 ########################################################################
