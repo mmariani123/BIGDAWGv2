@@ -12,8 +12,9 @@ if(!system.file(package='BIGDAWGv2')){
 }
 
 ```
-##Run
-###2.) Run the Labrador (Lab) test data making sure to select
+## Run
+
+### 2.) Run the Labrador (Lab) test data making sure to select
 'dla' as the species parameter
 
 ```{r run}
@@ -56,8 +57,9 @@ bigdawg.results <- BIGDAWGv2(
 
 ```
 
-##Notes
-###3.) Ongoing notes
+## Notes
+
+### 3.) Ongoing notes
 
 ############################## NOTES ###################################
 ########################################################################
