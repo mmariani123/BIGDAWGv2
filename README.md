@@ -1,4 +1,55 @@
-# BIGDAWGv2
+## BIGDAWGv2
+
+#1.) Install BIGDAWGv2 from GitHub using devtools
+
+```{r install}
+
+library(devtools)
+if(!system.file(package='BIGDAWGv2')){
+devtools::install_github('mmariani123/BIDAWGv2')
+}
+
+```
+
+#2.) Run the Labrador (Lab) test data making sure to select
+#'dla' as the species parameter
+
+```{r run}
+
+library(BIGDAWGv2)
+
+#Select your species:
+Species <- 'dla'
+
+#Select your input data:
+Data <- BIGDAWGv2::labData
+#Data <- BIGDAWGv2::akitaData  
+
+#Choose your loci of interest:
+LociSet <- list('DRB1','DQA1')
+
+bigdawg.results <- BIGDAWGv2(
+  Data         = Data,
+  Species      = Species,
+  HLA          = FALSE,
+  Run.Tests    = c('HWE', 'A'),
+  Loci.Set     = LociSet, #Must be a list or will throw an error
+  Exon         = c(1),
+  All.Pairwise = FALSE,
+  Trim         = FALSE,
+  Res          = 2,
+  EVS.rm       = FALSE,
+  Missing      = 2,
+  Strict.Bin   = FALSE,
+  Cores.Lim    = 1L,
+  Results.Dir  = ResultsDir,
+  Return       = TRUE,
+  Output       = TRUE,
+  Merge.Output = FALSE,
+  Verbose      = TRUE)
+
+```
+
 BIGDAWGv2 Software in progress with Professor Richard Single PhD of the 
 University of Vermont and Professor Steven Mack of the University of 
 California San Francisco. R package for statistical analyses of highly 
