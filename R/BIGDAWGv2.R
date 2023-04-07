@@ -195,7 +195,7 @@ BIGDAWGv2 <- function(Data,
     if(missing(Results.Dir)){
       OutDir <- paste0(MainDir,
                        .Platform$file.sep,
-                      "output ",
+                      "bigdawgv2_output_",
                       format(Sys.time(), "%d%m%y %H%M%S")
                       )
       dir.create(OutDir)
@@ -326,8 +326,10 @@ if(Species=='hla'){
   #    'GitHub/BIGDAWGv2/UpdatePtnAlign.RData'))
 
   #UPL <- system.file('UpdatePtnAlign.RData','BIGDAWGv2')
-  UPL <- paste0('C:/Users/mmari/OneDrive/Documents/',
-                'GitHub/BIGDAWGv2/UpdatePtnAlign.RData')
+  #UPL <- system.file('data/ExonPtnAlign_dla.obj',
+  #                   package = 'BIGDAWgv2')
+  UPL <- system.file('data/UpdatePtnAlign_dla.RData',
+                     package = 'BIGDAWGv2')
 
   if(file.exists(UPL)){
     #EPL <- read.table(UPL,

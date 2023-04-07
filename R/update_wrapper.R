@@ -17,7 +17,7 @@ UpdateRelease <- function(Force=F,
 
 ##browser()
 
-if(species=='dla' & CreateNew==TRUE){
+if(Species=='dla' & CreateNew==TRUE){
 
   #Step 1 get loci
 

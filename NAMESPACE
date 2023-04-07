@@ -5,6 +5,8 @@ importFrom("stats", "chisq.test", "fisher.test", "na.omit", "pchisq", "qnorm", "
 importFrom("utils", "data", "combn", "download.file", "packageVersion", "read.table", "write.table","write.csv")
 importFrom("shinyjs", "logjs")
 importFrom("stats", "aggregate")
+importFrom("methods", "new", "setClass", "setMethod")
+importFrom("stats", "runif")
 import('R.utils')
 import('abind')
 import('plyr')
@@ -19,3 +21,18 @@ import("devtools")
 #import("dplyr")
 #import("data.table")
 #importFrom("BIGDAWG","HLA_data","ExonPtnList")
+
+#Warning messages:
+#1: replacing previous import ‘data.table::last’ by ‘dplyr::last’ when loading ‘BIGDAWGv2’
+#2: replacing previous import ‘plyr::summarize’ by ‘dplyr::summarize’ when loading ‘BIGDAWGv2’
+#3: replacing previous import ‘plyr::mutate’ by ‘dplyr::mutate’ when loading ‘BIGDAWGv2’
+#4: replacing previous import ‘plyr::id’ by ‘dplyr::id’ when loading ‘BIGDAWGv2’
+#5: replacing previous import ‘plyr::arrange’ by ‘dplyr::arrange’ when loading ‘BIGDAWGv2’
+#6: replacing previous import ‘plyr::summarise’ by ‘dplyr::summarise’ when loading ‘BIGDAWGv2’
+#7: replacing previous import ‘data.table::first’ by ‘dplyr::first’ when loading ‘BIGDAWGv2’
+#8: replacing previous import ‘plyr::rename’ by ‘dplyr::rename’ when loading ‘BIGDAWGv2’
+#9: replacing previous import ‘plyr::desc’ by ‘dplyr::desc’ when loading ‘BIGDAWGv2’
+#10: replacing previous import ‘plyr::count’ by ‘dplyr::count’ when loading ‘BIGDAWGv2’
+#11: replacing previous import ‘data.table::between’ by ‘dplyr::between’ when loading ‘BIGDAWGv2’
+#12: replacing previous import ‘plyr::failwith’ by ‘dplyr::failwith’ when loading ‘BIGDAWGv2’
+#13: replacing previous import ‘R.utils::extract’ by ‘magrittr::extract’ when loading ‘BIGDAWGv2’

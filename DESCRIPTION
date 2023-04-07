@@ -11,8 +11,12 @@ Description: Updated, data sets and functions for chi-squared Hardy-Weinberg and
 License: GPL (>= 3)
 LazyData: True
 Depends: R (>= 4.0.0)
-Imports: XML, httr, haplo.stats, parallel, BIGDAWG, shinyjs, magrittr, R.utils, abind, data.table, devtools, dplyr, plyr, rlist
-Suggests: knitr, rmarkdown
+Imports: XML, httr, haplo.stats, parallel, BIGDAWG, shinyjs, magrittr, R.utils, abind, data.table, devtools, dplyr, plyr, rlist, methods
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
 RoxygenNote: 7.2.1
 Encoding: UTF-8
+Config/testthat/edition: 3

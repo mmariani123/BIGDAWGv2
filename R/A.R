@@ -28,8 +28,6 @@ A <- function(Locus,
 
   if(length(Alleles2F)>1){
 
-    browser()
-
     # Filter exon alignment matrix for specific alleles
     TabAA <- AlignmentFilter(ExonAlign,Alleles2F,Locus)
     TabAA.list <- lapply(seq_len(ncol(TabAA)), function(x) TabAA[,c(2,x)])

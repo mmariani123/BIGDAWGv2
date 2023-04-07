@@ -25,7 +25,7 @@ library(BIGDAWGv2)
 Species <- 'dla'
 
 #Select your input data:
-Data <- BIGDAWGv2::labData
+Data <- BIGDAWGv2::lab_data
 #Data <- BIGDAWGv2::akitaData  
 
 #Choose your loci of interest:
@@ -203,3 +203,13 @@ Consider Bengstrom's future batch tools as well.
 Still need to remove 'browser' commands where needed
 
 Need to finish dog unit test and vignette
+
+Need to remove labData as it was replaced with lab_data
+
+Note first commands in BIGDAWGv2:
+  options(warn=-1)
+  MainDir <- getwd()
+  on.exit(setwd(MainDir), add = TRUE)
+
+ExonPtnAlign_dla.obj vs UpdatePtnAlign_dla.RData
+

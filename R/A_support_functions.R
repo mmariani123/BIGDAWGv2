@@ -52,8 +52,6 @@ AlignmentFilter <- function(Align, Alleles, Locus) {
 
     }
 
-    browser()
-
     AlignMatrix <- cbind(rep(Locus,nrow(AlignMatrix)),AlignMatrix)
     rownames(AlignMatrix) <- NULL
     colnames(AlignMatrix)[1] <- "Locus"
@@ -220,7 +218,6 @@ Exon.Filter <- function(Locus,
   E.Stop <- as.numeric(E.Ptn.Starts[which(E.Ptn.Starts[,'Exon']==Exon),'Stop'])
   E.Length <- E.Stop - E.Start + 1
 
-  browser()
   # Ensure Number Shift Due to lack of Position 0
   if( E.Start >= abs(Ref.Start) ) {
     E.Start.Pos <- E.Start + Ref.Start

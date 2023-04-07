@@ -58,8 +58,6 @@ A.wrapper <- function(loci,
 
         if(getExon %in% E.Ptn.Starts[,'Exon']){
 
-          browser()
-
           if(is.null(p)){
             p=1
           }else{
@@ -83,8 +81,6 @@ A.wrapper <- function(loci,
       ExonAlign <- EPL[[Locus]]
 
     }
-
-    #browser()
 
     # Run Amino Acid Analysis
     A.list <- A(Locus,

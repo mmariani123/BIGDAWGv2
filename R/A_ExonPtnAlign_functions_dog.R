@@ -144,7 +144,7 @@ ExonPtnAlign.Create <- function(Locus,RefTab,Species){
 
   }else if(Species=="dla"){
   Locus.get <- Locus
-  browser()
+
   Pgrps <- read.table(system.file(paste0('extdata/',
                                   Species,
                                   '/',
@@ -157,7 +157,7 @@ ExonPtnAlign.Create <- function(Locus,RefTab,Species){
                       stringsAsFactors=F,
                       strip.white=T,
                       colClasses="character")
-  #browser()
+
   Pgrps[,1] <- gsub("DLA-|\\*", "", Pgrps[,1])
   Pgrps <- PgrpFormat(Pgrps,Locus)
   }
@@ -188,8 +188,6 @@ ExonPtnAlign.Create <- function(Locus,RefTab,Species){
   Align[,1] <- sapply(Align[,1],FUN=gsub,pattern=" ",replacement="")
   Align <- strsplit(Align[,1],"~")
   Align <- as.matrix(do.call(rbind,Align))
-
-  #browser()
 
   #Adjust rows to blank where Sequence column == Allele Name
   Align[which(Align[,1]==Align[,2]),2] <- ""
@@ -239,7 +237,6 @@ ExonPtnAlign.Create <- function(Locus,RefTab,Species){
   AlignMatrix <- cbind(Align[,1:4],Align.split)
   rownames(AlignMatrix) <- NULL
 
-  #browser()
   if(Species=='dla'){
     #truncate ref alleles to 2 positions for now for testing
     for(z in 1:nrow(AlignMatrix)){
@@ -273,7 +270,6 @@ ExonPtnAlign.Create <- function(Locus,RefTab,Species){
 
   }
 
-  #browser()
   #Save Reference Row
   RefSeq <- AlignMatrix[1,]
 
@@ -424,12 +420,10 @@ AlignObj.Create <- function(Loci,Release,RefTab,Species){
   ExonPtnList[['Release.Version']] <- as.character(Release[2,])
   ExonPtnList[['Release.Date']] <- as.character(Release[1,])
   ExonPtnList[['RefExons']] <- RefTab
-  browser()
+
   save(ExonPtnList,
        file=paste0(devtools::package_file(),
-         '/inst/extdata/',
-         Species,
-         '/ExonPtnAlign.obj'))
+         '/data/ExonPtnAlign_dla.obj'))
 
 }
 
@@ -444,8 +438,6 @@ AlignObj.Create <- function(Loci,Release,RefTab,Species){
 AlignObj.Update <- function(Loci,Release,RefTab,Species){
 
   AlignMatrix <- NULL; rm(AlignMatrix)
-
-  browser()
 
   UpdatePtnList <- list()
   for(i in 1:length(Loci)){
@@ -564,13 +556,11 @@ AlignObj.Update <- function(Loci,Release,RefTab,Species){
     'DRB1'=DRB1
   )
 
-  browser()
   save(UpdatePtnList,
        file=paste0(
          devtools::package_file(),
-         '/inst/extdata/',
-         Species,
-         '/UpdatePtnAlign.RData'))
+         '/data',
+         '/UpdatePtnAlign_dla.RData'))
 
   ##Example, look at human:
   ##BIGDAWG::ExonPtnList$ExonPtnMap
