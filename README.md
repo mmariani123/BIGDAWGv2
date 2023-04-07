@@ -1,8 +1,8 @@
 # BIGDAWGv2
 
-##Install
+## Install
 
-###1.) Install BIGDAWGv2 from GitHub using devtools
+### 1.) Install BIGDAWGv2 from GitHub using devtools
 
 ```{r install}
 
