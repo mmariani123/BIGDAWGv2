@@ -6,7 +6,7 @@
 
 library(devtools)
 if(!system.file(package='BIGDAWGv2')){
-devtools::install_github('mmariani123/BIDAWGv2')
+  devtools::install_github('mmariani123/BIDAWGv2')
 }
 
 ```
@@ -28,6 +28,10 @@ Data <- BIGDAWGv2::labData
 #Choose your loci of interest:
 LociSet <- list('DRB1','DQA1')
 
+#Set your output directory:
+resultsDir <- '<path/to/output/dir>'
+
+#Run BIGDAWGv2
 bigdawg.results <- BIGDAWGv2(
   Data         = Data,
   Species      = Species,
