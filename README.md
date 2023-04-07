@@ -31,7 +31,7 @@ LociSet <- list('DRB1','DQA1')
 #Set your output directory:
 resultsDir <- '<path/to/output/dir>'
 
-#Run BIGDAWGv2
+#Set your other parameters and run BIGDAWGv2:
 bigdawg.results <- BIGDAWGv2(
   Data         = Data,
   Species      = Species,
@@ -53,6 +53,12 @@ bigdawg.results <- BIGDAWGv2(
   Verbose      = TRUE)
 
 ```
+
+############################## NOTES ###################################
+########################################################################
+########################################################################
+########################################################################
+########################################################################
 
 BIGDAWGv2 Software in progress with Professor Richard Single PhD of the 
 University of Vermont and Professor Steven Mack of the University of 
