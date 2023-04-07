@@ -12,7 +12,7 @@ if(!system.file(package='BIGDAWGv2')){
 ```
 
 #2.) Run the Labrador (Lab) test data making sure to select
-#'dla' as the species parameter
+'dla' as the species parameter
 
 ```{r run}
 
